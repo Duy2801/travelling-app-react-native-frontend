@@ -77,17 +77,24 @@ export const login = async (data: LoginData): Promise<AuthResponse> => {
 // Đăng xuất
 export const logout = async (): Promise<void> => {
   try {
+    console.log('Logout: Getting refresh token...');
     const refreshToken = await AsyncStorage.getItem('refreshToken');
+    console.log('Logout: Refresh token:', refreshToken ? 'Found' : 'Not found');
+    
     if (refreshToken) {
+      console.log('Logout: Calling API...');
       await api.post('/auth/logout', { refreshToken });
+      console.log('Logout: API call successful');
     }
   } catch (error) {
     console.error('Logout error:', error);
   } finally {
+    console.log('Logout: Removing tokens from AsyncStorage...');
     // Xóa tất cả dữ liệu đã lưu
     await AsyncStorage.removeItem('accessToken');
     await AsyncStorage.removeItem('refreshToken');
     await AsyncStorage.removeItem('user');
+    console.log('Logout: Tokens removed successfully');
   }
 };
 

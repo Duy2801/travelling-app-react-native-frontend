@@ -13,36 +13,48 @@ import {
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useRouter } from 'expo-router';
-import { login } from '../src/services/authService';
+import api from '../src/services/api';
 
-export default function LoginScreen() {
+export default function ForgotPasswordScreen() {
   const router = useRouter();
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = async () => {
+  const isValidEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const handleForgotPassword = async () => {
     if (!email.trim()) {
       Alert.alert('Lỗi', 'Vui lòng nhập email');
       return;
     }
 
-    if (!password) {
-      Alert.alert('Lỗi', 'Vui lòng nhập mật khẩu');
+    if (!isValidEmail(email)) {
+      Alert.alert('Lỗi', 'Email không hợp lệ');
       return;
     }
 
     setIsLoading(true);
     try {
-      const response = await login({
+      await api.post('/auth/forgot-password', {
         email: email.trim().toLowerCase(),
-        password,
       });
 
-      // Chuyển đến trang chủ ngay lập tức
-      router.replace('/(tabs)');
+      Alert.alert(
+        'Thành công! ✅',
+        `Email khôi phục mật khẩu đã được gửi đến ${email}.\n\nVui lòng kiểm tra hộp thư và làm theo hướng dẫn để đặt lại mật khẩu.`,
+        [
+          {
+            text: 'OK',
+            onPress: () => router.back(),
+          },
+        ]
+      );
     } catch (error: any) {
-      Alert.alert('Đăng nhập thất bại', error.message || 'Đã xảy ra lỗi');
+      const message = error.response?.data?.message || 'Không thể gửi email. Vui lòng thử lại.';
+      Alert.alert('Lỗi', message);
     } finally {
       setIsLoading(false);
     }
@@ -59,11 +71,26 @@ export default function LoginScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.content}>
+          {/* Back Button */}
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => router.back()}
+          >
+            <Text style={styles.backButtonText}>← Quay lại</Text>
+          </TouchableOpacity>
+
+          {/* Icon */}
+          <View style={styles.iconContainer}>
+            <View style={styles.iconCircle}>
+              <Text style={styles.iconText}>🔑</Text>
+            </View>
+          </View>
+
           {/* Header */}
           <View style={styles.header}>
-            <Text style={styles.title}>Đăng Nhập</Text>
+            <Text style={styles.title}>Quên mật khẩu?</Text>
             <Text style={styles.subtitle}>
-              Chào mừng bạn trở lại với ứng dụng tour du lịch
+              Nhập email đã đăng ký, chúng tôi sẽ gửi link đặt lại mật khẩu cho bạn
             </Text>
           </View>
 
@@ -84,51 +111,35 @@ export default function LoginScreen() {
               />
             </View>
 
-            {/* Mật khẩu */}
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Mật khẩu</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Nhập mật khẩu"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry={true}
-                autoCapitalize="none"
-                editable={!isLoading}
-              />
+            {/* Info Box */}
+            <View style={styles.infoBox}>
+              <Text style={styles.infoIcon}>ℹ️</Text>
+              <Text style={styles.infoText}>
+                Link đặt lại mật khẩu sẽ được gửi đến email của bạn và có hiệu lực trong 10 phút.
+              </Text>
             </View>
 
-            {/* Nút đăng nhập */}
+            {/* Submit Button */}
             <TouchableOpacity
               style={[styles.button, isLoading && styles.buttonDisabled]}
-              onPress={handleLogin}
+              onPress={handleForgotPassword}
               disabled={isLoading}
             >
               {isLoading ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text style={styles.buttonText}>Đăng Nhập</Text>
+                <Text style={styles.buttonText}>Gửi email khôi phục</Text>
               )}
             </TouchableOpacity>
 
-            {/* Link quên mật khẩu */}
-            <View style={styles.forgotPasswordContainer}>
-              <TouchableOpacity
-                onPress={() => router.push('/forgot-password')}
-                disabled={isLoading}
-              >
-                <Text style={styles.forgotPasswordText}>Quên mật khẩu?</Text>
-              </TouchableOpacity>
-            </View>
-
-            {/* Link đăng ký */}
+            {/* Footer */}
             <View style={styles.footer}>
-              <Text style={styles.footerText}>Chưa có tài khoản? </Text>
+              <Text style={styles.footerText}>Đã nhớ mật khẩu? </Text>
               <TouchableOpacity
-                onPress={() => router.push('/register')}
+                onPress={() => router.back()}
                 disabled={isLoading}
               >
-                <Text style={styles.linkText}>Đăng ký ngay</Text>
+                <Text style={styles.linkText}>Đăng nhập ngay</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -149,22 +160,50 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 24,
-    paddingTop: 80,
+    paddingTop: 20,
     paddingBottom: 24,
+  },
+  backButton: {
+    paddingVertical: 8,
+    marginBottom: 20,
+  },
+  backButtonText: {
+    fontSize: 16,
+    color: '#007AFF',
+    fontWeight: '600',
+  },
+  iconContainer: {
+    alignItems: 'center',
+    marginBottom: 32,
+  },
+  iconCircle: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: '#E3F2FD',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  iconText: {
+    fontSize: 50,
   },
   header: {
     marginBottom: 40,
+    alignItems: 'center',
   },
   title: {
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: 'bold',
     color: '#1a1a1a',
-    marginBottom: 8,
+    marginBottom: 12,
+    textAlign: 'center',
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 15,
     color: '#666',
-    lineHeight: 24,
+    lineHeight: 22,
+    textAlign: 'center',
+    paddingHorizontal: 20,
   },
   form: {
     flex: 1,
@@ -188,6 +227,25 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
   },
+  infoBox: {
+    flexDirection: 'row',
+    backgroundColor: '#FFF3CD',
+    padding: 12,
+    borderRadius: 12,
+    marginBottom: 24,
+    borderWidth: 1,
+    borderColor: '#FFE082',
+  },
+  infoIcon: {
+    fontSize: 18,
+    marginRight: 8,
+  },
+  infoText: {
+    flex: 1,
+    fontSize: 13,
+    color: '#856404',
+    lineHeight: 18,
+  },
   button: {
     backgroundColor: '#007AFF',
     borderRadius: 12,
@@ -210,7 +268,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
   },
   footer: {
@@ -224,15 +282,6 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   linkText: {
-    fontSize: 14,
-    color: '#007AFF',
-    fontWeight: '600',
-  },
-  forgotPasswordContainer: {
-    alignItems: 'center',
-    marginTop: 16,
-  },
-  forgotPasswordText: {
     fontSize: 14,
     color: '#007AFF',
     fontWeight: '600',

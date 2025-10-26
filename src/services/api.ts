@@ -1,4 +1,5 @@
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Cấu hình base URL cho API
 const API_BASE_URL = 'http://localhost:3000/v1';
@@ -14,12 +15,12 @@ const api = axios.create({
 
 // Interceptor để thêm token vào header
 api.interceptors.request.use(
-  (config) => {
-    // Có thể lấy token từ AsyncStorage và thêm vào header
-    // const token = await AsyncStorage.getItem('accessToken');
-    // if (token) {
-    //   config.headers.Authorization = `Bearer ${token}`;
-    // }
+  async (config) => {
+    // Lấy token từ AsyncStorage và thêm vào header
+    const token = await AsyncStorage.getItem('accessToken');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
   (error) => {

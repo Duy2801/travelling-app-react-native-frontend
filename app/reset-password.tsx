@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -12,46 +12,34 @@ import {
   ScrollView,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { useRouter } from 'expo-router';
-import { register } from '../src/services/authService';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import api from '../src/services/api';
 
-export default function RegisterScreen() {
+export default function ResetPasswordScreen() {
   const router = useRouter();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+  const params = useLocalSearchParams();
+  const token = params.token as string;
+
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const isValidEmail = (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
+  useEffect(() => {
+    if (!token) {
+      Alert.alert('Lỗi', 'Link không hợp lệ', [
+        { text: 'OK', onPress: () => router.replace('/login') },
+      ]);
+    }
+  }, [token]);
 
   const isValidPassword = (password: string): boolean => {
     const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
     return passwordRegex.test(password);
   };
 
-  const handleRegister = async () => {
-    // Validation
-    if (!name.trim()) {
-      Alert.alert('Lỗi', 'Vui lòng nhập họ tên');
-      return;
-    }
-
-    if (!email.trim()) {
-      Alert.alert('Lỗi', 'Vui lòng nhập email');
-      return;
-    }
-
-    if (!isValidEmail(email)) {
-      Alert.alert('Lỗi', 'Email không hợp lệ');
-      return;
-    }
-
+  const handleResetPassword = async () => {
     if (!password) {
-      Alert.alert('Lỗi', 'Vui lòng nhập mật khẩu');
+      Alert.alert('Lỗi', 'Vui lòng nhập mật khẩu mới');
       return;
     }
 
@@ -68,29 +56,25 @@ export default function RegisterScreen() {
       return;
     }
 
-    // Gọi API đăng ký
     setIsLoading(true);
     try {
-      const response = await register({
-        name: name.trim(),
-        email: email.trim().toLowerCase(),
+      await api.post(`/auth/reset-password?token=${token}`, {
         password,
       });
 
       Alert.alert(
-        'Đăng ký thành công! 🎉',
-        `Chào mừng ${response.user.name}!\n\nMột email xác thực đã được gửi đến ${response.user.email}.\n\nVui lòng kiểm tra hộp thư và nhấn vào link để xác thực tài khoản trước khi đăng nhập.`,
+        'Đặt lại mật khẩu thành công! ✅',
+        'Bạn có thể đăng nhập bằng mật khẩu mới ngay bây giờ.',
         [
           {
-            text: 'Đồng ý',
-            onPress: () => {
-              router.replace('/login');
-            },
+            text: 'Đăng nhập',
+            onPress: () => router.replace('/login'),
           },
         ]
       );
     } catch (error: any) {
-      Alert.alert('Đăng ký thất bại', error.message || 'Đã xảy ra lỗi');
+      const message = error.response?.data?.message || 'Không thể đặt lại mật khẩu. Link có thể đã hết hạn.';
+      Alert.alert('Lỗi', message);
     } finally {
       setIsLoading(false);
     }
@@ -107,47 +91,26 @@ export default function RegisterScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.content}>
+          {/* Icon */}
+          <View style={styles.iconContainer}>
+            <View style={styles.iconCircle}>
+              <Text style={styles.iconText}>🔒</Text>
+            </View>
+          </View>
+
           {/* Header */}
           <View style={styles.header}>
-            <Text style={styles.title}>Đăng Ký Tài Khoản</Text>
+            <Text style={styles.title}>Đặt lại mật khẩu</Text>
             <Text style={styles.subtitle}>
-              Tạo tài khoản để bắt đầu đặt tour du lịch
+              Nhập mật khẩu mới cho tài khoản của bạn
             </Text>
           </View>
 
           {/* Form */}
           <View style={styles.form}>
-            {/* Họ tên */}
+            {/* New Password */}
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>Họ và tên</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Nhập họ và tên của bạn"
-                value={name}
-                onChangeText={setName}
-                autoCapitalize="words"
-                editable={!isLoading}
-              />
-            </View>
-
-            {/* Email */}
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Email</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="example@email.com"
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoComplete="email"
-                editable={!isLoading}
-              />
-            </View>
-
-            {/* Mật khẩu */}
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Mật khẩu</Text>
+              <Text style={styles.label}>Mật khẩu mới</Text>
               <TextInput
                 style={styles.input}
                 placeholder="Ít nhất 8 ký tự, có chữ và số"
@@ -159,12 +122,12 @@ export default function RegisterScreen() {
               />
             </View>
 
-            {/* Xác nhận mật khẩu */}
+            {/* Confirm Password */}
             <View style={styles.inputContainer}>
               <Text style={styles.label}>Xác nhận mật khẩu</Text>
               <TextInput
                 style={styles.input}
-                placeholder="Nhập lại mật khẩu"
+                placeholder="Nhập lại mật khẩu mới"
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
                 secureTextEntry={true}
@@ -173,24 +136,31 @@ export default function RegisterScreen() {
               />
             </View>
 
-            {/* Nút đăng ký */}
+            {/* Info Box */}
+            <View style={styles.infoBox}>
+              <Text style={styles.infoText}>
+                💡 Mật khẩu mạnh nên có ít nhất 8 ký tự, bao gồm chữ cái và số
+              </Text>
+            </View>
+
+            {/* Submit Button */}
             <TouchableOpacity
               style={[styles.button, isLoading && styles.buttonDisabled]}
-              onPress={handleRegister}
+              onPress={handleResetPassword}
               disabled={isLoading}
             >
               {isLoading ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text style={styles.buttonText}>Đăng Ký</Text>
+                <Text style={styles.buttonText}>Đặt lại mật khẩu</Text>
               )}
             </TouchableOpacity>
 
-            {/* Link đăng nhập */}
+            {/* Footer */}
             <View style={styles.footer}>
-              <Text style={styles.footerText}>Đã có tài khoản? </Text>
+              <Text style={styles.footerText}>Đã nhớ mật khẩu? </Text>
               <TouchableOpacity
-                onPress={() => router.back()}
+                onPress={() => router.replace('/login')}
                 disabled={isLoading}
               >
                 <Text style={styles.linkText}>Đăng nhập ngay</Text>
@@ -217,19 +187,37 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     paddingBottom: 24,
   },
+  iconContainer: {
+    alignItems: 'center',
+    marginBottom: 32,
+  },
+  iconCircle: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: '#E3F2FD',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  iconText: {
+    fontSize: 50,
+  },
   header: {
     marginBottom: 40,
+    alignItems: 'center',
   },
   title: {
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: 'bold',
     color: '#1a1a1a',
-    marginBottom: 8,
+    marginBottom: 12,
+    textAlign: 'center',
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 15,
     color: '#666',
-    lineHeight: 24,
+    lineHeight: 22,
+    textAlign: 'center',
   },
   form: {
     flex: 1,
@@ -253,6 +241,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
   },
+  infoBox: {
+    backgroundColor: '#E3F2FD',
+    padding: 12,
+    borderRadius: 12,
+    marginBottom: 24,
+    borderWidth: 1,
+    borderColor: '#90CAF9',
+  },
+  infoText: {
+    fontSize: 13,
+    color: '#1565C0',
+    lineHeight: 18,
+  },
   button: {
     backgroundColor: '#007AFF',
     borderRadius: 12,
@@ -275,7 +276,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
   },
   footer: {
