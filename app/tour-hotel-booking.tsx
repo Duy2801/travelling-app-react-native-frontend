@@ -85,9 +85,9 @@ export default function TourHotelBookingScreen() {
         },
       });
     } else {
-      // No hotels, go directly to booking form
+      // No hotels, go to service selection
       router.push({
-        pathname: '/booking-form' as any,
+        pathname: '/service-selection' as any,
         params: {
           tourId: tour.id,
         },

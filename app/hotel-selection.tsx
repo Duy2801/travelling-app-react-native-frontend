@@ -93,8 +93,9 @@ export default function HotelSelectionScreen() {
       return;
     }
 
+    // Navigate to service selection
     router.push({
-      pathname: '/booking-form' as any,
+      pathname: '/service-selection' as any,
       params: {
         tourId: tour!.id,
         hotelId: selectedHotel.id,

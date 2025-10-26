@@ -17,15 +17,18 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { getTourById, Tour } from '../src/services/tourService';
 import { createBooking } from '../src/services/bookingService';
 import { getCurrentUser } from '../src/services/authService';
+import { getServiceById, Service, getServiceTypeIcon, getServiceTypeLabel } from '../src/services/serviceService';
 
 export default function BookingFormScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
   const tourId = params.tourId as string;
   const hotelId = params.hotelId as string | undefined; // Optional hotelId
+  const servicesParam = params.services as string | undefined; // Comma-separated service IDs
 
   const [tour, setTour] = useState<Tour | null>(null);
   const [user, setUser] = useState<any>(null);
+  const [selectedServices, setSelectedServices] = useState<Service[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -73,6 +76,17 @@ export default function BookingFormScreen() {
       
       setTour(tourData);
       setUser(userData);
+
+      // Load selected services if provided
+      if (servicesParam) {
+        const serviceIds = servicesParam.split(',').filter(id => id.trim());
+        const servicesData = await Promise.all(
+          serviceIds.map(id => getServiceById(id))
+        );
+        if (isMountedRef.current) {
+          setSelectedServices(servicesData.filter(Boolean) as Service[]);
+        }
+      }
       
       // Check if user is not logged in
       if (!userData) {
@@ -216,13 +230,18 @@ export default function BookingFormScreen() {
       const endDate = new Date(startDate);
       endDate.setDate(endDate.getDate() + days - 1);
 
+      // Calculate total price including services
+      const servicesTotal = selectedServices.reduce((total, service) => total + service.price, 0);
+      const totalPrice = (tour.pricePerPerson * numberOfPeople) + servicesTotal;
+
       const bookingData = {
         tourId: tour.id,
         ...(hotelId && { hotelId }), // Add hotelId if exists
+        ...(selectedServices.length > 0 && { services: selectedServices.map(s => s.id) }), // Add services if selected
         numberOfPeople,
         startDate: startDate.toISOString(),
         endDate: endDate.toISOString(),
-        totalPrice: tour.pricePerPerson * numberOfPeople,
+        totalPrice,
       };
       
       const result = await createBooking(bookingData);
@@ -274,7 +293,8 @@ export default function BookingFormScreen() {
 
   if (!tour) return null;
 
-  const totalPrice = tour.pricePerPerson * numberOfPeople;
+  const servicesTotal = selectedServices.reduce((total, service) => total + service.price, 0);
+  const totalPrice = (tour.pricePerPerson * numberOfPeople) + servicesTotal;
 
   return (
     <View style={styles.container}>
@@ -319,6 +339,43 @@ export default function BookingFormScreen() {
             <Text style={styles.summaryPriceValue}>{formatPrice(totalPrice)}</Text>
           </View>
         </View>
+
+        {/* Selected Services */}
+        {selectedServices.length > 0 && (
+          <View style={styles.servicesCard}>
+            <Text style={styles.servicesTitle}>🎫 Dịch vụ đã chọn ({selectedServices.length})</Text>
+            {selectedServices.map((service) => (
+              <View key={service.id} style={styles.serviceItem}>
+                <View style={styles.serviceHeader}>
+                  <View style={styles.serviceIconBox}>
+                    <Text style={styles.serviceIcon}>{getServiceTypeIcon(service.type)}</Text>
+                  </View>
+                  <View style={styles.serviceInfoContent}>
+                    <View style={styles.serviceNameRow}>
+                      <Text style={styles.serviceName}>{service.name}</Text>
+                      <View style={styles.serviceTypeBadge}>
+                        <Text style={styles.serviceTypeBadgeText}>
+                          {getServiceTypeLabel(service.type)}
+                        </Text>
+                      </View>
+                    </View>
+                    {service.description && (
+                      <Text style={styles.serviceDescription} numberOfLines={2}>
+                        {service.description}
+                      </Text>
+                    )}
+                    <Text style={styles.servicePrice}>{formatPrice(service.price)}</Text>
+                  </View>
+                </View>
+              </View>
+            ))}
+            <View style={styles.serviceDivider} />
+            <View style={styles.serviceTotalRow}>
+              <Text style={styles.serviceTotalLabel}>Tổng tiền dịch vụ:</Text>
+              <Text style={styles.serviceTotalValue}>{formatPrice(servicesTotal)}</Text>
+            </View>
+          </View>
+        )}
 
         {/* Date Picker Section */}
         <View style={styles.section}>
@@ -686,6 +743,110 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: '#E0E0E0',
     marginVertical: 12,
+  },
+  servicesCard: {
+    backgroundColor: '#fff',
+    marginHorizontal: 16,
+    marginBottom: 16,
+    padding: 16,
+    borderRadius: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  servicesTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#1a1a1a',
+    marginBottom: 12,
+  },
+  serviceItem: {
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F0F0',
+  },
+  serviceHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  serviceIconBox: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: '#F0F8FF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  serviceIcon: {
+    fontSize: 24,
+  },
+  serviceInfoContent: {
+    flex: 1,
+  },
+  serviceNameRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  serviceName: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#1a1a1a',
+    flex: 1,
+    marginRight: 8,
+  },
+  serviceTypeBadge: {
+    backgroundColor: '#E3F2FD',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 8,
+  },
+  serviceTypeBadgeText: {
+    fontSize: 9,
+    color: '#007AFF',
+    fontWeight: '600',
+    textTransform: 'uppercase',
+  },
+  serviceDescription: {
+    fontSize: 13,
+    color: '#666',
+    marginBottom: 6,
+  },
+  servicePrice: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: '#4CAF50',
+  },
+  serviceInfo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  serviceDivider: {
+    height: 1,
+    backgroundColor: '#E0E0E0',
+    marginTop: 8,
+    marginBottom: 12,
+  },
+  serviceTotalRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  serviceTotalLabel: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: '#1a1a1a',
+  },
+  serviceTotalValue: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#007AFF',
   },
   section: {
     backgroundColor: '#fff',

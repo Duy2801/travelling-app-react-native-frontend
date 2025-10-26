@@ -314,36 +314,61 @@ export default function HomeScreen() {
             scrollEventThrottle={16}
             contentContainerStyle={styles.bannerScroll}
           >
-            {tours.slice(0, 5).map((tour, index) => (
-              <TouchableOpacity
-                key={tour.id}
-                style={styles.bannerCard}
-                onPress={() => router.push({ pathname: '/tour-detail' as any, params: { id: tour.id } })}
-                activeOpacity={0.95}
-              >
-                <Image
-                  source={{ uri: tour.images?.[0] || 'https://via.placeholder.com/400x200?text=Tour' }}
-                  style={styles.bannerImage}
-                  resizeMode="cover"
-                />
-                <View style={styles.bannerOverlay}>
-                  <View style={styles.bannerContent}>
-                    <Text style={styles.bannerTitle} numberOfLines={2}>
-                      {tour.name}
-                    </Text>
-                    <Text style={styles.bannerDestination}>
-                      📍 {tour.destination} • {tour.duration}
-                    </Text>
-                    <View style={styles.bannerPriceContainer}>
-                      <Text style={styles.bannerPriceLabel}>Chỉ từ</Text>
-                      <Text style={styles.bannerPrice}>
-                        {tour.pricePerPerson.toLocaleString('vi-VN')}₫
+            {tours.slice(0, 5).map((tour, index) => {
+              const hasHotels = Array.isArray(tour.hotels) && tour.hotels.length > 0;
+              
+              return (
+                <TouchableOpacity
+                  key={tour.id}
+                  style={styles.bannerCard}
+                  onPress={() => {
+                    if (hasHotels) {
+                      // Tour has hotels - go to tour-hotel-booking to see details & select hotel
+                      router.push({ 
+                        pathname: '/tour-hotel-booking' as any, 
+                        params: { tourId: tour.id } 
+                      });
+                    } else {
+                      // No hotels - go directly to tour detail
+                      router.push({ 
+                        pathname: '/tour-detail' as any, 
+                        params: { id: tour.id } 
+                      });
+                    }
+                  }}
+                  activeOpacity={0.95}
+                >
+                  <Image
+                    source={{ uri: tour.images?.[0] || 'https://via.placeholder.com/400x200?text=Tour' }}
+                    style={styles.bannerImage}
+                    resizeMode="cover"
+                  />
+                  <View style={styles.bannerOverlay}>
+                    <View style={styles.bannerContent}>
+                      <Text style={styles.bannerTitle} numberOfLines={2}>
+                        {tour.name}
                       </Text>
+                      <Text style={styles.bannerDestination}>
+                        📍 {tour.destination} • {tour.duration}
+                      </Text>
+                      {hasHotels && (
+                        <View style={styles.bannerHotelBadge}>
+                          <Text style={styles.bannerHotelBadgeText}>
+                            🏨 {Array.isArray(tour.hotels) ? tour.hotels.length : 0} khách sạn
+                          </Text>
+                        </View>
+                      )}
+                      <View style={styles.bannerPriceContainer}>
+                        <Text style={styles.bannerPriceLabel}>Chỉ từ</Text>
+                        <Text style={styles.bannerPrice}>
+                          {tour.pricePerPerson.toLocaleString('vi-VN')}₫
+                        </Text>
+                      </View>
                     </View>
                   </View>
-                </View>
-              </TouchableOpacity>
-            ))}
+                </TouchableOpacity>
+              );
+            })}
           </ScrollView>
 
           {/* Pagination Dots */}
@@ -935,6 +960,19 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#E3F2FD',
     marginBottom: 12,
+  },
+  bannerHotelBadge: {
+    backgroundColor: 'rgba(76, 175, 80, 0.9)',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+    alignSelf: 'flex-start',
+    marginBottom: 8,
+  },
+  bannerHotelBadgeText: {
+    fontSize: 12,
+    color: '#fff',
+    fontWeight: '600',
   },
   bannerPriceContainer: {
     flexDirection: 'row',
