@@ -9,6 +9,7 @@ import {
   RefreshControl,
   Alert,
   Image,
+  Modal,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useRouter, useFocusEffect } from 'expo-router';
@@ -20,6 +21,9 @@ export default function BookingsScreen() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [cancelBookingId, setCancelBookingId] = useState<string | null>(null);
+  const [isCancelling, setIsCancelling] = useState(false);
 
   useEffect(() => {
     loadBookings();
@@ -54,26 +58,24 @@ export default function BookingsScreen() {
   };
 
   const handleCancelBooking = (bookingId: string) => {
-    Alert.alert(
-      'Hủy booking',
-      'Bạn có chắc chắn muốn hủy booking này?',
-      [
-        { text: 'Không', style: 'cancel' },
-        {
-          text: 'Hủy booking',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await cancelBooking(bookingId);
-              Alert.alert('Thành công', 'Đã hủy booking');
-              loadBookings();
-            } catch (error: any) {
-              Alert.alert('Lỗi', error.response?.data?.message || 'Không thể hủy booking');
-            }
-          },
-        },
-      ]
-    );
+    setCancelBookingId(bookingId);
+    setShowCancelModal(true);
+  };
+
+  const confirmCancel = async () => {
+    if (!cancelBookingId) return;
+    
+    try {
+      setIsCancelling(true);
+      await cancelBooking(cancelBookingId);
+      await loadBookings();
+      setShowCancelModal(false);
+      setCancelBookingId(null);
+    } catch (error: any) {
+      Alert.alert('Lỗi', error.response?.data?.message || 'Không thể hủy booking');
+    } finally {
+      setIsCancelling(false);
+    }
   };
 
   const filteredBookings = bookings.filter(b => b.status === activeTab);
@@ -81,7 +83,7 @@ export default function BookingsScreen() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'pending': return '#FF9800';
-      case 'confirmed': return '#007AFF';
+      case 'confirmed': return '#2196F3';
       case 'completed': return '#4CAF50';
       case 'cancelled': return '#FF3B30';
       default: return '#999';
@@ -100,7 +102,7 @@ export default function BookingsScreen() {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
 
       {/* Header */}
       <View style={styles.header}>
@@ -148,7 +150,7 @@ export default function BookingsScreen() {
 
       {isLoading ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#007AFF" />
+          <ActivityIndicator size="large" color="#2196F3" />
           <Text style={styles.loadingText}>Đang tải...</Text>
         </View>
       ) : (
@@ -169,7 +171,7 @@ export default function BookingsScreen() {
               console.log('🎫 Booking:', booking.id, 'Tour type:', typeof booking.tourId, 'Tour:', tour);
               
               return (
-              <View key={booking.id} style={styles.bookingCard}>
+              <View key={booking.id || booking._id} style={styles.bookingCard}>
                 <View style={styles.bookingThumbnail}>
                   {tour?.images?.[0] ? (
                     <Image 
@@ -205,10 +207,10 @@ export default function BookingsScreen() {
                       </Text>
                     </View>
                   </View>
-                  {booking.status === 'pending' && (
+                  {booking.status === 'pending' && (booking.id || booking._id) && (
                     <TouchableOpacity
                       style={styles.cancelButton}
-                      onPress={() => handleCancelBooking(booking.id)}
+                      onPress={() => handleCancelBooking(booking.id || booking._id || '')}
                     >
                       <Text style={styles.cancelButtonText}>Hủy booking</Text>
                     </TouchableOpacity>
@@ -236,6 +238,49 @@ export default function BookingsScreen() {
           <View style={{ height: 20 }} />
         </ScrollView>
       )}
+
+      {/* Cancel Booking Modal */}
+      <Modal
+        visible={showCancelModal}
+        animationType="fade"
+        transparent={true}
+        onRequestClose={() => !isCancelling && setShowCancelModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalIconContainer}>
+              <View style={styles.modalIconCircle}>
+                <Text style={styles.modalIcon}>⚠️</Text>
+              </View>
+            </View>
+            <Text style={styles.modalTitle}>Hủy Booking</Text>
+            <Text style={styles.modalMessage}>
+              Bạn có chắc chắn muốn hủy booking này?{'\n'}
+              Hành động này không thể hoàn tác.
+            </Text>
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.cancelModalButton]}
+                onPress={() => setShowCancelModal(false)}
+                disabled={isCancelling}
+              >
+                <Text style={styles.cancelModalButtonText}>Không</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.confirmCancelButton]}
+                onPress={confirmCancel}
+                disabled={isCancelling}
+              >
+                {isCancelling ? (
+                  <ActivityIndicator color="#FFFFFF" size="small" />
+                ) : (
+                  <Text style={styles.confirmCancelButtonText}>Hủy booking</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -257,22 +302,25 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   header: {
-    backgroundColor: '#007AFF',
-    paddingTop: 50,
+    backgroundColor: '#FFFFFF',
+    paddingTop: 30,
     paddingBottom: 20,
     paddingHorizontal: 24,
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   headerTitle: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#1A1A1A',
     marginBottom: 4,
   },
   headerSubtitle: {
     fontSize: 14,
-    color: '#E3F2FD',
+    color: '#666',
   },
   tabsContainer: {
     flexDirection: 'row',
@@ -289,7 +337,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   activeTab: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#2196F3',
   },
   tabText: {
     fontSize: 13,
@@ -344,7 +392,7 @@ const styles = StyleSheet.create({
   },
   bookingDestination: {
     fontSize: 13,
-    color: '#007AFF',
+    color: '#2196F3',
     marginBottom: 4,
   },
   bookingDate: {
@@ -366,7 +414,7 @@ const styles = StyleSheet.create({
   bookingPrice: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#007AFF',
+    color: '#2196F3',
   },
   cancelButton: {
     backgroundColor: '#FF3B30',
@@ -412,7 +460,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   exploreButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#2196F3',
     paddingHorizontal: 32,
     paddingVertical: 14,
     borderRadius: 12,
@@ -421,5 +469,89 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 15,
     fontWeight: '600',
+  },
+
+  // Cancel Modal
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+  },
+  modalContent: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    padding: 28,
+    width: '100%',
+    maxWidth: 400,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.25,
+    shadowRadius: 20,
+    elevation: 10,
+  },
+  modalIconContainer: {
+    marginBottom: 20,
+  },
+  modalIconCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#FEE2E2',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalIcon: {
+    fontSize: 40,
+  },
+  modalTitle: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#1E293B',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  modalMessage: {
+    fontSize: 15,
+    color: '#64748B',
+    textAlign: 'center',
+    lineHeight: 22,
+    marginBottom: 28,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    gap: 12,
+    width: '100%',
+  },
+  modalButton: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 48,
+  },
+  cancelModalButton: {
+    backgroundColor: '#F1F5F9',
+  },
+  cancelModalButtonText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#475569',
+  },
+  confirmCancelButton: {
+    backgroundColor: '#FF3B30',
+    shadowColor: '#FF3B30',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  confirmCancelButtonText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#FFFFFF',
   },
 });

@@ -106,7 +106,7 @@ export default function HotelSelectionScreen() {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#007AFF" />
+        <ActivityIndicator size="large" color="#2196F3" />
         <Text style={styles.loadingText}>Đang tải...</Text>
       </View>
     );
@@ -126,7 +126,7 @@ export default function HotelSelectionScreen() {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
 
       {/* Header */}
       <View style={styles.header}>
@@ -368,7 +368,7 @@ export default function HotelSelectionScreen() {
 
                   {isLoadingReviews ? (
                     <View style={styles.reviewsLoading}>
-                      <ActivityIndicator size="small" color="#007AFF" />
+                      <ActivityIndicator size="small" color="#2196F3" />
                       <Text style={styles.reviewsLoadingText}>Đang tải đánh giá...</Text>
                     </View>
                   ) : hotelReviews.length > 0 ? (
@@ -486,21 +486,28 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#007AFF',
-    paddingTop: 50,
+    backgroundColor: '#FFFFFF',
+    paddingTop: 60,
     paddingBottom: 16,
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
   backButton: {
     width: 40,
     height: 40,
+    borderRadius: 20,
+    backgroundColor: '#F5F7FA',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
   },
   backButtonText: {
     fontSize: 28,
-    color: '#fff',
+    color: '#2196F3',
     fontWeight: '300',
   },
   headerTitleContainer: {
@@ -509,12 +516,12 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#1A1A1A',
     marginBottom: 2,
   },
   headerSubtitle: {
     fontSize: 13,
-    color: 'rgba(255, 255, 255, 0.9)',
+    color: '#999',
   },
   scrollView: {
     flex: 1,
@@ -540,7 +547,7 @@ const styles = StyleSheet.create({
   tourPrice: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#007AFF',
+    color: '#2196F3',
   },
   section: {
     backgroundColor: '#fff',
@@ -639,21 +646,21 @@ const styles = StyleSheet.create({
   hotelPrice: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#4CAF50',
+    color: '#2196F3',
   },
   selectButton: {
     backgroundColor: '#fff',
     borderWidth: 2,
-    borderColor: '#007AFF',
+    borderColor: '#2196F3',
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: 'center',
   },
   selectButtonSelected: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#2196F3',
   },
   selectButtonText: {
-    color: '#007AFF',
+    color: '#2196F3',
     fontSize: 15,
     fontWeight: 'bold',
   },
@@ -691,7 +698,7 @@ const styles = StyleSheet.create({
   bottomPrice: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#007AFF',
+    color: '#2196F3',
   },
   bottomNote: {
     fontSize: 11,
@@ -700,7 +707,7 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
   bookButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#2196F3',
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
@@ -721,10 +728,15 @@ const styles = StyleSheet.create({
   modalHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#007AFF',
+    backgroundColor: '#FFFFFF',
     paddingTop: 50,
     paddingBottom: 16,
     paddingHorizontal: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   modalCloseButton: {
     width: 40,
@@ -732,17 +744,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
+    backgroundColor: '#F5F7FA',
+    borderRadius: 20,
   },
   modalCloseText: {
     fontSize: 24,
-    color: '#fff',
+    color: '#2196F3',
     fontWeight: '300',
   },
   modalTitle: {
     flex: 1,
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#1A1A1A',
   },
   modalScrollView: {
     flex: 1,
@@ -803,7 +817,7 @@ const styles = StyleSheet.create({
   detailPriceValue: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#4CAF50',
+    color: '#2196F3',
   },
   detailSectionTitle: {
     fontSize: 18,
@@ -824,12 +838,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 8,
     paddingHorizontal: 12,
-    backgroundColor: '#E8F5E9',
+    backgroundColor: '#bdd4efff',
     borderRadius: 8,
   },
   amenityIcon: {
     fontSize: 16,
-    color: '#4CAF50',
+    color: '#2196F3',
     marginRight: 10,
     fontWeight: 'bold',
   },
@@ -890,7 +904,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#007AFF',
+    backgroundColor: '#2196F3',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -928,7 +942,7 @@ const styles = StyleSheet.create({
   moreReviews: {
     textAlign: 'center',
     fontSize: 13,
-    color: '#007AFF',
+    color: '#2196F3',
     marginTop: 8,
     fontStyle: 'italic',
   },
@@ -958,16 +972,16 @@ const styles = StyleSheet.create({
     borderTopColor: '#E0E0E0',
   },
   modalSelectButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#2196F3',
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
   },
   modalSelectButtonSelected: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#2196F3',
   },
   modalSelectButtonText: {
-    color: '#fff',
+    color: '#2196F3',
     fontSize: 16,
     fontWeight: 'bold',
   },

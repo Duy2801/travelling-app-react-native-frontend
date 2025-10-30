@@ -2,11 +2,12 @@ import api from './api';
 import { Tour } from './tourService';
 
 export interface Booking {
-  id: string;
-  userId: string;
-  tourId: string | Tour; // Can be populated
-  hotelId?: string;
-  services?: string[];
+  id?: string;
+  _id?: string;
+  userId: string | any;
+  tourId: string | Tour | any;
+  hotelId?: string | any;
+  services?: string[] | any[];
   numberOfPeople: number;
   startDate: string;
   endDate: string;
@@ -17,6 +18,7 @@ export interface Booking {
   updatedAt: string;
   tour?: any;
   hotel?: any;
+  user?: any;
 }
 
 export interface CreateBookingData {
@@ -70,4 +72,24 @@ export const cancelBooking = async (bookingId: string): Promise<Booking> => {
 export const updateBooking = async (bookingId: string, data: Partial<CreateBookingData>): Promise<Booking> => {
   const response = await api.patch(`/bookings/${bookingId}`, data);
   return response.data;
+};
+
+// Admin APIs
+export const getAllBookings = async (params?: GetBookingsParams): Promise<BookingsResponse> => {
+  const response = await api.get('/bookings', { params });
+  return response.data;
+};
+
+export const confirmBooking = async (bookingId: string): Promise<Booking> => {
+  const response = await api.patch(`/bookings/${bookingId}/confirm`);
+  return response.data;
+};
+
+export const rejectBooking = async (bookingId: string): Promise<Booking> => {
+  const response = await api.patch(`/bookings/${bookingId}`, { status: 'cancelled' });
+  return response.data;
+};
+
+export const deleteBooking = async (bookingId: string): Promise<void> => {
+  await api.delete(`/bookings/${bookingId}`);
 };

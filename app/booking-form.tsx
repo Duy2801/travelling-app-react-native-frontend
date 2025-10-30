@@ -285,7 +285,7 @@ export default function BookingFormScreen() {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#007AFF" />
+        <ActivityIndicator size="large" color="#2196F3" />
         <Text style={styles.loadingText}>Đang tải...</Text>
       </View>
     );
@@ -668,7 +668,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: '#fff',
-    paddingTop: Platform.OS === 'ios' ? 50 : 20,
+    paddingTop: Platform.OS === 'ios' ? 60 : 30,
     paddingBottom: 16,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
@@ -682,7 +682,7 @@ const styles = StyleSheet.create({
   },
   backButtonText: {
     fontSize: 28,
-    color: '#007AFF',
+    color: '#2196F3',
   },
   headerTitle: {
     fontSize: 18,
@@ -736,7 +736,7 @@ const styles = StyleSheet.create({
   },
   summaryPriceValue: {
     fontSize: 18,
-    color: '#FF6B35',
+    color: '#2196F3',
     fontWeight: 'bold',
   },
   divider: {
@@ -807,7 +807,7 @@ const styles = StyleSheet.create({
   },
   serviceTypeBadgeText: {
     fontSize: 9,
-    color: '#007AFF',
+    color: '#2196F3',
     fontWeight: '600',
     textTransform: 'uppercase',
   },
@@ -846,7 +846,7 @@ const styles = StyleSheet.create({
   serviceTotalValue: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#007AFF',
+    color: '#2196F3',
   },
   section: {
     backgroundColor: '#fff',
@@ -887,10 +887,10 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#007AFF',
+    backgroundColor: '#2196F3',
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#007AFF',
+    shadowColor: '#2196F3',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
@@ -1019,7 +1019,7 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   termsLink: {
-    color: '#007AFF',
+    color: '#2196F3',
     fontWeight: '600',
   },
   bottomBar: {
@@ -1045,14 +1045,14 @@ const styles = StyleSheet.create({
   bottomPriceValue: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#FF6B35',
+    color: '#2196F3',
   },
   submitButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#2196F3',
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
-    shadowColor: '#007AFF',
+    shadowColor: '#2196F3',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -1162,13 +1162,13 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   modalButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#2196F3',
     paddingVertical: 16,
     paddingHorizontal: 32,
     borderRadius: 12,
     width: '100%',
     alignItems: 'center',
-    shadowColor: '#007AFF',
+    shadowColor: '#2196F3',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,

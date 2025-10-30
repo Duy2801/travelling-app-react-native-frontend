@@ -1,17 +1,17 @@
 import { Tabs } from "expo-router";
-import { Text } from "react-native";
+import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 
 export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#007AFF',
-        tabBarInactiveTintColor: '#999',
+        tabBarActiveTintColor: '#2196F3',
+        tabBarInactiveTintColor: '#999999',
         tabBarStyle: {
-          backgroundColor: '#fff',
+          backgroundColor: '#FFFFFF',
           borderTopWidth: 1,
-          borderTopColor: '#f0f0f0',
+          borderTopColor: '#E0E0E0',
           paddingBottom: 8,
           paddingTop: 8,
           height: 65,
@@ -22,8 +22,8 @@ export default function TabLayout() {
           elevation: 8,
         },
         tabBarLabelStyle: {
-          fontSize: 11,
-          fontWeight: '600',
+          fontSize: 10,
+          fontWeight: '500',
           marginTop: 4,
         },
         tabBarIconStyle: {
@@ -36,7 +36,11 @@ export default function TabLayout() {
         options={{ 
           title: "Trang chủ",
           tabBarIcon: ({ color, focused }) => (
-            <Text style={{ fontSize: focused ? 26 : 24 }}>🏠</Text>
+            <Ionicons 
+              name={focused ? "home" : "home-outline"} 
+              size={24} 
+              color={color} 
+            />
           ),
         }} 
       />
@@ -45,25 +49,37 @@ export default function TabLayout() {
         options={{ 
           title: "Dịch vụ",
           tabBarIcon: ({ color, focused }) => (
-            <Text style={{ fontSize: focused ? 26 : 24 }}>🎯</Text>
+            <Ionicons 
+              name={focused ? "grid" : "grid-outline"} 
+              size={24} 
+              color={color} 
+            />
           ),
         }} 
       />
       <Tabs.Screen 
         name="bookings" 
         options={{ 
-          title: "Đặt tour",
+          title: "Đặt chỗ của tôi",
           tabBarIcon: ({ color, focused }) => (
-            <Text style={{ fontSize: focused ? 26 : 24 }}>📋</Text>
+            <MaterialCommunityIcons 
+              name={focused ? "text-box-multiple" : "text-box-multiple-outline"} 
+              size={24} 
+              color={color} 
+            />
           ),
         }} 
       />
       <Tabs.Screen 
         name="notifications" 
         options={{ 
-          title: "Thông báo",
+          title: "Thông tin",
           tabBarIcon: ({ color, focused }) => (
-            <Text style={{ fontSize: focused ? 26 : 24 }}>🔔</Text>
+            <Ionicons 
+              name={focused ? "mail" : "mail-outline"} 
+              size={24} 
+              color={color} 
+            />
           ),
         }} 
       />
@@ -72,7 +88,11 @@ export default function TabLayout() {
         options={{ 
           title: "Tài khoản",
           tabBarIcon: ({ color, focused }) => (
-            <Text style={{ fontSize: focused ? 26 : 24 }}>👤</Text>
+            <Ionicons 
+              name={focused ? "person" : "person-outline"} 
+              size={24} 
+              color={color} 
+            />
           ),
         }} 
       />

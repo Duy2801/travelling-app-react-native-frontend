@@ -6,10 +6,10 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
-  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Modal,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useRouter } from 'expo-router';
@@ -22,6 +22,26 @@ export default function RegisterScreen() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Modal states
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [modalTitle, setModalTitle] = useState('');
+  const [registeredUserName, setRegisteredUserName] = useState('');
+  const [registeredUserEmail, setRegisteredUserEmail] = useState('');
+
+  const showError = (title: string, message: string) => {
+    setModalTitle(title);
+    setModalMessage(message);
+    setShowErrorModal(true);
+  };
+
+  const showSuccess = (userName: string, userEmail: string) => {
+    setRegisteredUserName(userName);
+    setRegisteredUserEmail(userEmail);
+    setShowSuccessModal(true);
+  };
 
   const isValidEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -29,42 +49,38 @@ export default function RegisterScreen() {
   };
 
   const isValidPassword = (password: string): boolean => {
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
-    return passwordRegex.test(password);
+    return password.length >= 8 && /[A-Za-z]/.test(password) && /\d/.test(password);
   };
 
   const handleRegister = async () => {
     // Validation
     if (!name.trim()) {
-      Alert.alert('Lỗi', 'Vui lòng nhập họ tên');
+      showError('Lỗi', 'Vui lòng nhập họ tên');
       return;
     }
 
     if (!email.trim()) {
-      Alert.alert('Lỗi', 'Vui lòng nhập email');
+      showError('Lỗi', 'Vui lòng nhập email');
       return;
     }
 
     if (!isValidEmail(email)) {
-      Alert.alert('Lỗi', 'Email không hợp lệ');
+      showError('Lỗi', 'Email không hợp lệ');
       return;
     }
 
     if (!password) {
-      Alert.alert('Lỗi', 'Vui lòng nhập mật khẩu');
+      showError('Lỗi', 'Vui lòng nhập mật khẩu');
       return;
     }
 
     if (!isValidPassword(password)) {
-      Alert.alert(
-        'Lỗi',
-        'Mật khẩu phải có ít nhất 8 ký tự, bao gồm cả chữ và số'
-      );
+      showError('Lỗi', 'Mật khẩu phải có ít nhất 8 ký tự, bao gồm cả chữ và số');
       return;
     }
 
     if (password !== confirmPassword) {
-      Alert.alert('Lỗi', 'Mật khẩu xác nhận không khớp');
+      showError('Lỗi', 'Mật khẩu xác nhận không khớp');
       return;
     }
 
@@ -77,20 +93,9 @@ export default function RegisterScreen() {
         password,
       });
 
-      Alert.alert(
-        'Đăng ký thành công! 🎉',
-        `Chào mừng ${response.user.name}!\n\nMột email xác thực đã được gửi đến ${response.user.email}.\n\nVui lòng kiểm tra hộp thư và nhấn vào link để xác thực tài khoản trước khi đăng nhập.`,
-        [
-          {
-            text: 'Đồng ý',
-            onPress: () => {
-              router.replace('/login');
-            },
-          },
-        ]
-      );
+      showSuccess(response.user.name, response.user.email);
     } catch (error: any) {
-      Alert.alert('Đăng ký thất bại', error.message || 'Đã xảy ra lỗi');
+      showError('Đăng ký thất bại', error.message || 'Đã xảy ra lỗi');
     } finally {
       setIsLoading(false);
     }
@@ -102,6 +107,71 @@ export default function RegisterScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <StatusBar style="dark" />
+      
+      {/* Error Modal */}
+      <Modal
+        transparent
+        visible={showErrorModal}
+        animationType="fade"
+        onRequestClose={() => setShowErrorModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalIcon}>⚠️</Text>
+              <Text style={styles.modalTitle}>{modalTitle}</Text>
+            </View>
+            <View style={styles.modalBody}>
+              <Text style={styles.modalMessage}>{modalMessage}</Text>
+            </View>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => setShowErrorModal(false)}
+            >
+              <Text style={styles.modalButtonText}>Đóng</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Success Modal */}
+      <Modal
+        transparent
+        visible={showSuccessModal}
+        animationType="fade"
+        onRequestClose={() => {
+          setShowSuccessModal(false);
+          router.replace('/login');
+        }}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalIcon}>🎉</Text>
+              <Text style={styles.modalTitle}>Đăng ký thành công!</Text>
+            </View>
+            <View style={styles.modalBody}>
+              <Text style={styles.modalWelcome}>Chào mừng {registeredUserName}!</Text>
+              <Text style={styles.modalMessage}>
+                Một email xác thực đã được gửi đến{'\n'}
+                <Text style={styles.modalEmail}>{registeredUserEmail}</Text>
+                {'\n\n'}
+                Vui lòng kiểm tra hộp thư và nhấn vào link để xác thực tài khoản trước khi đăng nhập.
+              </Text>
+            </View>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => {
+                setShowSuccessModal(false);
+                router.replace('/login');
+              }}
+            >
+              <Text style={styles.modalButtonText}>Đồng ý</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
@@ -109,9 +179,9 @@ export default function RegisterScreen() {
         <View style={styles.content}>
           {/* Header */}
           <View style={styles.header}>
-            <Text style={styles.title}>Đăng Ký Tài Khoản</Text>
+            <Text style={styles.title}>Đăng Ký</Text>
             <Text style={styles.subtitle}>
-              Tạo tài khoản để bắt đầu đặt tour du lịch
+              Tạo tài khoản mới để khám phá các tour du lịch tuyệt vời
             </Text>
           </View>
 
@@ -122,7 +192,7 @@ export default function RegisterScreen() {
               <Text style={styles.label}>Họ và tên</Text>
               <TextInput
                 style={styles.input}
-                placeholder="Nhập họ và tên của bạn"
+                placeholder="Nguyễn Văn A"
                 value={name}
                 onChangeText={setName}
                 autoCapitalize="words"
@@ -190,7 +260,7 @@ export default function RegisterScreen() {
             <View style={styles.footer}>
               <Text style={styles.footerText}>Đã có tài khoản? </Text>
               <TouchableOpacity
-                onPress={() => router.back()}
+                onPress={() => router.push('/login')}
                 disabled={isLoading}
               >
                 <Text style={styles.linkText}>Đăng nhập ngay</Text>
@@ -203,6 +273,7 @@ export default function RegisterScreen() {
   );
 }
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -214,7 +285,7 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 24,
-    paddingTop: 60,
+    paddingTop: 80,
     paddingBottom: 24,
   },
   header: {
@@ -293,4 +364,73 @@ const styles = StyleSheet.create({
     color: '#007AFF',
     fontWeight: '600',
   },
+  // Modal styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    padding: 24,
+    width: '100%',
+    maxWidth: 360,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalHeader: {
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  modalIcon: {
+    fontSize: 48,
+    marginBottom: 12,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#1a1a1a',
+    textAlign: 'center',
+  },
+  modalBody: {
+    marginBottom: 24,
+  },
+  modalWelcome: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1a1a1a',
+    textAlign: 'center',
+    marginBottom: 12,
+  },
+  modalMessage: {
+    fontSize: 15,
+    color: '#666',
+    textAlign: 'center',
+    lineHeight: 22,
+  },
+  modalEmail: {
+    color: '#007AFF',
+    fontWeight: '600',
+  },
+  modalButton: {
+    backgroundColor: '#007AFF',
+    borderRadius: 12,
+    paddingVertical: 14,
+    alignItems: 'center',
+  },
+  modalButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
 });
+

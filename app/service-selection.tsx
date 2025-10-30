@@ -103,7 +103,7 @@ export default function ServiceSelectionScreen() {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#007AFF" />
+        <ActivityIndicator size="large" color="#2196F3" />
         <Text style={styles.loadingText}>Đang tải...</Text>
       </View>
     );
@@ -119,7 +119,7 @@ export default function ServiceSelectionScreen() {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
 
       {/* Header */}
       <View style={styles.header}>
@@ -318,10 +318,15 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#007AFF',
-    paddingTop: 50,
+    backgroundColor: '#FFFFFF',
+    paddingTop: 30,
     paddingBottom: 16,
     paddingHorizontal: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   backButton: {
     width: 40,
@@ -329,10 +334,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
+    backgroundColor: '#F5F7FA',
+    borderRadius: 20,
   },
   backButtonText: {
     fontSize: 28,
-    color: '#fff',
+    color: '#2196F3',
     fontWeight: '300',
   },
   headerTitleContainer: {
@@ -341,12 +348,12 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#1A1A1A',
     marginBottom: 2,
   },
   headerSubtitle: {
     fontSize: 13,
-    color: 'rgba(255, 255, 255, 0.9)',
+    color: '#999',
   },
   scrollView: {
     flex: 1,
@@ -372,7 +379,7 @@ const styles = StyleSheet.create({
   tourPrice: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#007AFF',
+    color: '#2196F3',
   },
   selectedBadge: {
     backgroundColor: '#E8F5E9',
@@ -406,8 +413,8 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   filterChipActive: {
-    backgroundColor: '#007AFF',
-    borderColor: '#007AFF',
+    backgroundColor: '#2196F3',
+    borderColor: '#2196F3',
   },
   filterChipIcon: {
     fontSize: 16,
@@ -448,7 +455,7 @@ const styles = StyleSheet.create({
   },
   serviceCardSelected: {
     backgroundColor: '#E3F2FD',
-    borderColor: '#007AFF',
+    borderColor: '#2196F3',
   },
   serviceCheckbox: {
     marginRight: 12,
@@ -465,7 +472,7 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: '#007AFF',
+    backgroundColor: '#2196F3',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -510,7 +517,7 @@ const styles = StyleSheet.create({
   },
   serviceTypeBadgeText: {
     fontSize: 9,
-    color: '#007AFF',
+    color: '#2196F3',
     fontWeight: '600',
     textTransform: 'uppercase',
   },
@@ -565,7 +572,7 @@ const styles = StyleSheet.create({
   bottomPrice: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#007AFF',
+    color: '#2196F3',
   },
   bottomNote: {
     fontSize: 11,
@@ -581,19 +588,19 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     borderWidth: 2,
-    borderColor: '#007AFF',
+    borderColor: '#2196F3',
     paddingVertical: 14,
     borderRadius: 12,
     alignItems: 'center',
   },
   skipButtonText: {
-    color: '#007AFF',
+    color: '#2196F3',
     fontSize: 16,
     fontWeight: 'bold',
   },
   continueButton: {
     flex: 2,
-    backgroundColor: '#007AFF',
+    backgroundColor: '#2196F3',
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',

@@ -104,8 +104,27 @@ export const isAuthenticated = async (): Promise<boolean> => {
   return !!token;
 };
 
-// Lấy thông tin người dùng hiện tại
+// Lấy thông tin người dùng hiện tại (từ cache)
 export const getCurrentUser = async () => {
   const userStr = await AsyncStorage.getItem('user');
   return userStr ? JSON.parse(userStr) : null;
+};
+
+// Lấy thông tin người dùng từ server (luôn lấy dữ liệu mới nhất)
+export const fetchCurrentUser = async () => {
+  try {
+    const response = await api.get('/auth/me');
+    // Cập nhật cache
+    await AsyncStorage.setItem('user', JSON.stringify(response.data));
+    return response.data;
+  } catch (error: any) {
+    console.error('Error fetching current user:', error);
+    // Fallback to cached user if API fails
+    return getCurrentUser();
+  }
+};
+
+// Cập nhật user trong cache (gọi sau khi update profile)
+export const updateCachedUser = async (userData: any) => {
+  await AsyncStorage.setItem('user', JSON.stringify(userData));
 };

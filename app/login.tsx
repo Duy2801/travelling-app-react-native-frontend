@@ -39,8 +39,16 @@ export default function LoginScreen() {
         password,
       });
 
-      // Chuyển đến trang chủ ngay lập tức
-      router.replace('/(tabs)');
+      // Kiểm tra role của user và chuyển hướng phù hợp
+      if (response.user.role === 'admin') {
+        // Nếu là admin, chuyển đến trang admin
+        console.log('🔑 Admin login detected, redirecting to admin dashboard...');
+        router.replace('/admin');
+      } else {
+        // Nếu là user thường, chuyển đến trang tabs
+        console.log('👤 User login detected, redirecting to tabs...');
+        router.replace('/(tabs)');
+      }
     } catch (error: any) {
       Alert.alert('Đăng nhập thất bại', error.message || 'Đã xảy ra lỗi');
     } finally {

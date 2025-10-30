@@ -98,7 +98,7 @@ export default function ServicesScreen() {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#007AFF" />
+        <ActivityIndicator size="large" color="#2196F3" />
         <Text style={styles.loadingText}>Đang tải dịch vụ...</Text>
       </View>
     );
@@ -106,7 +106,7 @@ export default function ServicesScreen() {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
 
       {/* Header */}
       <View style={styles.header}>
@@ -286,7 +286,7 @@ export default function ServicesScreen() {
                   <View style={styles.modalSection}>
                     <Text style={styles.modalSectionTitle}>🏷️ Loại dịch vụ</Text>
                     <Text style={styles.modalSectionContent}>
-                      {getServiceTypeIcon(selectedService.type)} {getServiceTypeLabel(selectedService.type)}
+                      {getServiceTypeLabel(selectedService.type)}
                     </Text>
                   </View>
 
@@ -347,31 +347,36 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   header: {
-    backgroundColor: '#007AFF',
-    paddingTop: 50,
+    backgroundColor: '#FFFFFF',
+    paddingTop: 30,
     paddingBottom: 20,
     paddingHorizontal: 24,
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   headerTitle: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#1A1A1A',
     marginBottom: 4,
   },
   headerSubtitle: {
     fontSize: 14,
-    color: '#E3F2FD',
+    color: '#666',
     marginBottom: 20,
   },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: '#F5F7FA',
     borderRadius: 16,
     paddingHorizontal: 16,
     paddingVertical: 12,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
   },
   searchIcon: {
     fontSize: 20,
@@ -410,8 +415,8 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   filterChipActive: {
-    backgroundColor: '#007AFF',
-    borderColor: '#007AFF',
+    backgroundColor: '#2196F3',
+    borderColor: '#2196F3',
   },
   filterChipIcon: {
     fontSize: 16,
@@ -477,7 +482,7 @@ const styles = StyleSheet.create({
   },
   serviceTypeBadgeText: {
     fontSize: 10,
-    color: '#007AFF',
+    color: '#2196F3',
     fontWeight: '600',
     textTransform: 'uppercase',
   },
@@ -516,7 +521,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   clearButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#2196F3',
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 20,
@@ -595,7 +600,7 @@ const styles = StyleSheet.create({
   },
   modalBadgeText: {
     fontSize: 12,
-    color: '#007AFF',
+    color: '#2196F3',
     fontWeight: '600',
     textTransform: 'uppercase',
   },
@@ -637,7 +642,7 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   modalButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#2196F3',
     marginHorizontal: 20,
     marginTop: 10,
     paddingVertical: 16,

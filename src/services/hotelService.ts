@@ -51,3 +51,41 @@ export const searchHotels = async (params: GetHotelsParams): Promise<HotelsRespo
   const response = await api.get('/hotels/search', { params });
   return response.data;
 };
+
+// Tạo khách sạn mới (admin only)
+export const createHotel = async (data: Partial<Hotel>): Promise<Hotel> => {
+  try {
+    const response = await api.post<Hotel>('/hotels', data);
+    return response.data;
+  } catch (error: any) {
+    if (error.response) {
+      throw new Error(error.response.data.message || 'Không thể tạo khách sạn');
+    }
+    throw new Error('Không thể kết nối đến server');
+  }
+};
+
+// Cập nhật thông tin khách sạn (admin only)
+export const updateHotel = async (hotelId: string, data: Partial<Hotel>): Promise<Hotel> => {
+  try {
+    const response = await api.patch<Hotel>(`/hotels/${hotelId}`, data);
+    return response.data;
+  } catch (error: any) {
+    if (error.response) {
+      throw new Error(error.response.data.message || 'Không thể cập nhật khách sạn');
+    }
+    throw new Error('Không thể kết nối đến server');
+  }
+};
+
+// Xóa khách sạn (admin only)
+export const deleteHotel = async (hotelId: string): Promise<void> => {
+  try {
+    await api.delete(`/hotels/${hotelId}`);
+  } catch (error: any) {
+    if (error.response) {
+      throw new Error(error.response.data.message || 'Không thể xóa khách sạn');
+    }
+    throw new Error('Không thể kết nối đến server');
+  }
+};

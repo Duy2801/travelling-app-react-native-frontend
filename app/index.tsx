@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
-import { isAuthenticated } from '../src/services/authService';
+import { isAuthenticated, getCurrentUser } from '../src/services/authService';
 
 export default function Index() {
   const router = useRouter();
@@ -17,7 +17,19 @@ export default function Index() {
       console.log('Index: isAuthenticated =', authenticated);
       
       if (authenticated) {
-        router.replace('/(tabs)');
+        // Lấy thông tin user để kiểm tra role
+        const user = await getCurrentUser();
+        console.log('Index: User role =', user?.role);
+        
+        if (user?.role === 'admin') {
+          // Nếu là admin, chuyển đến trang admin
+          console.log('🔑 Admin detected, redirecting to admin dashboard...');
+          router.replace('/admin');
+        } else {
+          // Nếu là user thường, chuyển đến trang tabs
+          console.log('👤 User detected, redirecting to tabs...');
+          router.replace('/(tabs)');
+        }
       } else {
         router.replace('/login');
       }

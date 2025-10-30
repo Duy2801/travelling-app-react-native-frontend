@@ -134,7 +134,7 @@ export default function NotificationsScreen() {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#007AFF" />
+        <ActivityIndicator size="large" color="#2196F3" />
         <Text style={styles.loadingText}>Đang tải thông báo...</Text>
       </View>
     );
@@ -142,7 +142,7 @@ export default function NotificationsScreen() {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
 
       {/* Header */}
       <View style={styles.header}>
@@ -192,7 +192,7 @@ export default function NotificationsScreen() {
         style={styles.content}
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#007AFF" />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#2196F3" />
         }
       >
         {filteredNotifications.length > 0 ? (
@@ -275,12 +275,15 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   header: {
-    backgroundColor: '#007AFF',
-    paddingTop: Platform.OS === 'ios' ? 50 : 30,
+    backgroundColor: '#FFFFFF',
+    paddingTop: Platform.OS === 'ios' ? 60 : 30,
     paddingBottom: 20,
     paddingHorizontal: 24,
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   headerTop: {
     flexDirection: 'row',
@@ -290,7 +293,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#1A1A1A',
     marginRight: 12,
   },
   badge: {
@@ -308,7 +311,7 @@ const styles = StyleSheet.create({
   },
   headerSubtitle: {
     fontSize: 14,
-    color: '#E3F2FD',
+    color: '#666',
   },
   filterContainer: {
     flexDirection: 'row',
@@ -328,8 +331,8 @@ const styles = StyleSheet.create({
     borderColor: '#E0E0E0',
   },
   filterTabActive: {
-    backgroundColor: '#007AFF',
-    borderColor: '#007AFF',
+    backgroundColor: '#2196F3',
+    borderColor: '#2196F3',
   },
   filterText: {
     fontSize: 14,
@@ -349,7 +352,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   actionButtonText: {
-    color: '#007AFF',
+    color: '#2196F3',
     fontSize: 13,
     fontWeight: '600',
   },
@@ -372,7 +375,7 @@ const styles = StyleSheet.create({
   unreadCard: {
     backgroundColor: '#F0F8FF',
     borderLeftWidth: 3,
-    borderLeftColor: '#007AFF',
+    borderLeftColor: '#2196F3',
   },
   iconContainer: {
     width: 50,
@@ -405,7 +408,7 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#007AFF',
+    backgroundColor: '#2196F3',
   },
   notificationMessage: {
     fontSize: 13,

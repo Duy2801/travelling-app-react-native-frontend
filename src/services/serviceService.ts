@@ -81,3 +81,41 @@ export const getServiceTypeIcon = (type: ServiceType): string => {
   };
   return icons[type] || icons.other;
 };
+
+// Tạo dịch vụ mới (admin only)
+export const createService = async (data: Partial<Service>): Promise<Service> => {
+  try {
+    const response = await api.post<Service>('/services', data);
+    return response.data;
+  } catch (error: any) {
+    if (error.response) {
+      throw new Error(error.response.data.message || 'Không thể tạo dịch vụ');
+    }
+    throw new Error('Không thể kết nối đến server');
+  }
+};
+
+// Cập nhật dịch vụ (admin only)
+export const updateService = async (serviceId: string, data: Partial<Service>): Promise<Service> => {
+  try {
+    const response = await api.patch<Service>(`/services/${serviceId}`, data);
+    return response.data;
+  } catch (error: any) {
+    if (error.response) {
+      throw new Error(error.response.data.message || 'Không thể cập nhật dịch vụ');
+    }
+    throw new Error('Không thể kết nối đến server');
+  }
+};
+
+// Xóa dịch vụ (admin only)
+export const deleteService = async (serviceId: string): Promise<void> => {
+  try {
+    await api.delete(`/services/${serviceId}`);
+  } catch (error: any) {
+    if (error.response) {
+      throw new Error(error.response.data.message || 'Không thể xóa dịch vụ');
+    }
+    throw new Error('Không thể kết nối đến server');
+  }
+};

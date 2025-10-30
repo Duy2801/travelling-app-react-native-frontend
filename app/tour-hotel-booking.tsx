@@ -98,7 +98,7 @@ export default function TourHotelBookingScreen() {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#007AFF" />
+        <ActivityIndicator size="large" color="#2196F3" />
         <Text style={styles.loadingText}>Đang tải...</Text>
       </View>
     );
@@ -116,7 +116,7 @@ export default function TourHotelBookingScreen() {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
 
       {/* Header */}
       <View style={styles.header}>
@@ -245,7 +245,7 @@ export default function TourHotelBookingScreen() {
 
           {isLoadingReviews ? (
             <View style={styles.reviewsLoading}>
-              <ActivityIndicator size="small" color="#007AFF" />
+              <ActivityIndicator size="small" color="#2196F3" />
               <Text style={styles.reviewsLoadingText}>Đang tải đánh giá...</Text>
             </View>
           ) : reviews.length > 0 ? (
@@ -354,22 +354,27 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#007AFF',
-    paddingTop: 50,
+    backgroundColor: '#FFFFFF',
+    paddingTop: 30,
     paddingBottom: 16,
     paddingHorizontal: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
   backButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.2)',
+    backgroundColor: '#F5F7FA',
     justifyContent: 'center',
     alignItems: 'center',
   },
   backButtonText: {
     fontSize: 24,
-    color: '#fff',
+    color: '#2196F3',
     fontWeight: 'bold',
   },
   headerTitleContainer: {
@@ -380,11 +385,11 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#1A1A1A',
   },
   headerSubtitle: {
     fontSize: 13,
-    color: '#E3F2FD',
+    color: '#999',
     marginTop: 2,
   },
   content: {
@@ -437,7 +442,7 @@ const styles = StyleSheet.create({
   tourPrice: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#007AFF',
+    color: '#2196F3',
   },
   section: {
     marginTop: 24,
@@ -485,7 +490,7 @@ const styles = StyleSheet.create({
   bottomPrice: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#007AFF',
+    color: '#2196F3',
   },
   bottomNote: {
     fontSize: 12,
@@ -494,10 +499,15 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   continueButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#2196F3',
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
+    shadowColor: '#2196F3',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   continueButtonText: {
     color: '#fff',
@@ -520,7 +530,7 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 12,
     borderLeftWidth: 4,
-    borderLeftColor: '#007AFF',
+    borderLeftColor: '#2196F3',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
@@ -531,7 +541,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   dayBadge: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#2196F3',
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
@@ -551,7 +561,7 @@ const styles = StyleSheet.create({
   },
   activityBullet: {
     fontSize: 20,
-    color: '#007AFF',
+    color: '#2196F3',
     marginRight: 12,
     marginTop: -2,
   },
@@ -653,7 +663,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#007AFF',
+    backgroundColor: '#2196F3',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -691,7 +701,7 @@ const styles = StyleSheet.create({
   moreReviews: {
     textAlign: 'center',
     fontSize: 13,
-    color: '#007AFF',
+    color: '#2196F3',
     marginTop: 8,
     fontStyle: 'italic',
   },
