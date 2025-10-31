@@ -383,7 +383,7 @@ export default function AdminHotelsScreen() {
   if (isLoading && !refreshing) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#007AFF" />
+        <ActivityIndicator size="large" color="#2196F3" />
         <Text style={styles.loadingText}>Đang tải...</Text>
       </View>
     );
@@ -391,7 +391,7 @@ export default function AdminHotelsScreen() {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
 
       {/* Header */}
       <View style={styles.header}>
@@ -444,7 +444,7 @@ export default function AdminHotelsScreen() {
       <ScrollView
         style={styles.content}
         showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#2196F3" />}
       >
         {hotels.length > 0 ? (
           <>
@@ -599,17 +599,15 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   header: {
-    backgroundColor: '#5856D6',
+    backgroundColor: '#FFFFFF',
     paddingTop: Platform.OS === 'ios' ? 50 : 30,
     paddingBottom: 20,
     paddingHorizontal: 20,
-    borderBottomLeftRadius: 32,
-    borderBottomRightRadius: 32,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.15,
-    shadowRadius: 16,
-    elevation: 8,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 3,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -618,13 +616,13 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    backgroundColor: '#F8F9FA',
     justifyContent: 'center',
     alignItems: 'center',
   },
   backButtonText: {
     fontSize: 24,
-    color: '#fff',
+    color: '#1A1A1A',
     fontWeight: '600',
   },
   headerTitleContainer: {
@@ -633,7 +631,7 @@ const styles = StyleSheet.create({
   },
   headerSubtitle: {
     fontSize: 11,
-    color: 'rgba(255, 255, 255, 0.6)',
+    color: '#999',
     marginBottom: 2,
     textTransform: 'uppercase',
     letterSpacing: 1,
@@ -642,11 +640,11 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 24,
     fontWeight: '800',
-    color: '#fff',
+    color: '#2196F3',
     letterSpacing: -0.5,
   },
   headerBadge: {
-    backgroundColor: '#fff',
+    backgroundColor: '#2196F3',
     borderRadius: 16,
     paddingHorizontal: 12,
     paddingVertical: 6,
@@ -656,7 +654,7 @@ const styles = StyleSheet.create({
   headerBadgeText: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#5856D6',
+    color: '#FFFFFF',
   },
   searchContainer: {
     backgroundColor: 'transparent',
@@ -666,15 +664,12 @@ const styles = StyleSheet.create({
   searchBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 16,
+    backgroundColor: '#F8F9FA',
+    borderRadius: 12,
     paddingHorizontal: 16,
     marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 3,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
   },
   searchIcon: {
     fontSize: 18,
@@ -684,7 +679,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 15,
     paddingVertical: 14,
-    color: '#1a1a1a',
+    color: '#1A1A1A',
     fontWeight: '500',
   },
   clearIcon: {
@@ -693,19 +688,19 @@ const styles = StyleSheet.create({
     padding: 4,
   },
   addButton: {
-    backgroundColor: '#5856D6',
+    backgroundColor: '#2196F3',
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: 12,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowColor: '#2196F3',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
   },
   addButtonText: {
-    color: '#fff',
+    color: '#FFFFFF',
     fontSize: 15,
     fontWeight: '700',
   },
@@ -713,16 +708,18 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   hotelCard: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     marginHorizontal: 16,
     marginTop: 12,
     borderRadius: 16,
     padding: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+    shadowColor: '#2196F3',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
+    borderLeftWidth: 4,
+    borderLeftColor: '#2196F3',
   },
   hotelHeader: {
     marginBottom: 12,
@@ -733,7 +730,7 @@ const styles = StyleSheet.create({
   hotelName: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#1a1a1a',
+    color: '#1A1A1A',
     marginBottom: 6,
   },
   hotelAddress: {
@@ -754,7 +751,7 @@ const styles = StyleSheet.create({
   ratingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFF3CD',
+    backgroundColor: '#FFF9E6',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 8,
@@ -767,12 +764,12 @@ const styles = StyleSheet.create({
   ratingText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#856404',
+    color: '#FF9500',
   },
   priceText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#5856D6',
+    color: '#2196F3',
   },
   amenitiesContainer: {
     flexDirection: 'row',
@@ -780,7 +777,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   amenityBadge: {
-    backgroundColor: '#E8E7FE',
+    backgroundColor: '#E3F2FD',
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 12,
@@ -789,7 +786,7 @@ const styles = StyleSheet.create({
   },
   amenityText: {
     fontSize: 12,
-    color: '#5856D6',
+    color: '#2196F3',
     fontWeight: '600',
   },
   moreAmenities: {
@@ -813,7 +810,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   editButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#2196F3',
   },
   deleteButton: {
     backgroundColor: '#FF3B30',
@@ -821,10 +818,10 @@ const styles = StyleSheet.create({
   actionButtonText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#fff',
+    color: '#FFFFFF',
   },
   deleteButtonText: {
-    color: '#fff',
+    color: '#FFFFFF',
   },
   pagination: {
     flexDirection: 'row',
@@ -845,13 +842,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 8,
-    backgroundColor: '#5856D6',
+    backgroundColor: '#2196F3',
   },
   pageButtonDisabled: {
     backgroundColor: '#E0E0E0',
   },
   pageButtonText: {
-    color: '#fff',
+    color: '#FFFFFF',
     fontSize: 14,
     fontWeight: '600',
   },
@@ -895,7 +892,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 16,
     textAlign: 'center',
-    color: '#1a1a1a',
+    color: '#1A1A1A',
   },
   formContainer: {
     maxHeight: 500,
@@ -940,7 +937,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   cancelButton: {
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#F8F9FA',
   },
   cancelButtonText: {
     color: '#666',
@@ -948,10 +945,10 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   submitButton: {
-    backgroundColor: '#5856D6',
+    backgroundColor: '#2196F3',
   },
   submitButtonText: {
-    color: '#fff',
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
   },

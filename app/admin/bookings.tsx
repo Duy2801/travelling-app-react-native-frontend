@@ -130,9 +130,9 @@ export default function AdminBookingsScreen() {
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
       pending: '#FF9500',
-      confirmed: '#34C759',
+      confirmed: '#4CAF50',
       cancelled: '#FF3B30',
-      completed: '#007AFF',
+      completed: '#2196F3',
     };
     return colors[status] || '#8E8E93';
   };
@@ -150,7 +150,7 @@ export default function AdminBookingsScreen() {
   const getPaymentStatusColor = (status: string) => {
     const colors: Record<string, string> = {
       unpaid: '#FF9500',
-      paid: '#34C759',
+      paid: '#4CAF50',
       refunded: '#8E8E93',
     };
     return colors[status] || '#8E8E93';
@@ -174,7 +174,7 @@ export default function AdminBookingsScreen() {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#007AFF" />
+        <ActivityIndicator size="large" color="#2196F3" />
         <Text style={styles.loadingText}>Đang tải...</Text>
       </View>
     );
@@ -182,7 +182,7 @@ export default function AdminBookingsScreen() {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
 
       {/* Modern Header */}
       <View style={styles.header}>
@@ -230,13 +230,13 @@ export default function AdminBookingsScreen() {
             <Text style={styles.statLabel}>Chờ xử lý</Text>
           </View>
           <View style={styles.statItem}>
-            <Text style={[styles.statValue, { color: '#34C759' }]}>
+            <Text style={[styles.statValue, { color: '#4CAF50' }]}>
               {bookings.filter((b) => b.status === 'confirmed').length}
             </Text>
             <Text style={styles.statLabel}>Xác nhận</Text>
           </View>
           <View style={styles.statItem}>
-            <Text style={[styles.statValue, { color: '#007AFF' }]}>
+            <Text style={[styles.statValue, { color: '#2196F3' }]}>
               {bookings.filter((b) => b.status === 'completed').length}
             </Text>
             <Text style={styles.statLabel}>Hoàn thành</Text>
@@ -406,7 +406,7 @@ export default function AdminBookingsScreen() {
                     <Text style={styles.modalSectionTitle}>Cập nhật trạng thái</Text>
                     <View style={styles.statusButtons}>
                       <TouchableOpacity
-                        style={[styles.statusButton, { backgroundColor: '#34C759' }]}
+                        style={[styles.statusButton, { backgroundColor: '#4CAF50' }]}
                         onPress={() =>
                           handleUpdateBookingStatus(selectedBooking.id, 'confirmed')
                         }
@@ -414,7 +414,7 @@ export default function AdminBookingsScreen() {
                         <Text style={styles.statusButtonText}>✓ Xác nhận</Text>
                       </TouchableOpacity>
                       <TouchableOpacity
-                        style={[styles.statusButton, { backgroundColor: '#007AFF' }]}
+                        style={[styles.statusButton, { backgroundColor: '#2196F3' }]}
                         onPress={() =>
                           handleUpdateBookingStatus(selectedBooking.id, 'completed')
                         }
@@ -465,13 +465,13 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   header: {
-    backgroundColor: '#1a1a1a',
+    backgroundColor: '#FFFFFF',
     paddingTop: Platform.OS === 'ios' ? 50 : 30,
     paddingBottom: 20,
     paddingHorizontal: 20,
     borderBottomLeftRadius: 32,
     borderBottomRightRadius: 32,
-    shadowColor: '#000',
+    shadowColor: '#2196F3',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.15,
     shadowRadius: 16,
@@ -486,13 +486,13 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    backgroundColor: '#F8F9FA',
     justifyContent: 'center',
     alignItems: 'center',
   },
   backButtonText: {
     fontSize: 24,
-    color: '#fff',
+    color: '#2196F3',
     fontWeight: '600',
   },
   headerTitleContainer: {
@@ -501,7 +501,7 @@ const styles = StyleSheet.create({
   },
   headerSubtitle: {
     fontSize: 11,
-    color: 'rgba(255, 255, 255, 0.6)',
+    color: '#999',
     marginBottom: 2,
     textTransform: 'uppercase',
     letterSpacing: 1,
@@ -510,11 +510,11 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 24,
     fontWeight: '800',
-    color: '#fff',
+    color: '#2196F3',
     letterSpacing: -0.5,
   },
   headerBadge: {
-    backgroundColor: '#FF9500',
+    backgroundColor: '#2196F3',
     borderRadius: 16,
     paddingHorizontal: 12,
     paddingVertical: 6,
@@ -524,7 +524,7 @@ const styles = StyleSheet.create({
   headerBadgeText: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#fff',
+    color: '#FFFFFF',
   },
   searchContainer: {
     backgroundColor: 'transparent',
@@ -535,11 +535,13 @@ const styles = StyleSheet.create({
   searchBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderRadius: 16,
     paddingHorizontal: 16,
     marginBottom: 16,
-    shadowColor: '#000',
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    shadowColor: '#2196F3',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 8,
@@ -565,16 +567,13 @@ const styles = StyleSheet.create({
   statsRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    backgroundColor: '#fff',
+    backgroundColor: '#F8F9FA',
     borderRadius: 16,
     padding: 16,
     marginHorizontal: 20,
     marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 3,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
   },
   statItem: {
     alignItems: 'center',
@@ -582,7 +581,7 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 24,
     fontWeight: '800',
-    color: '#1a1a1a',
+    color: '#2196F3',
     marginBottom: 4,
   },
   statLabel: {
@@ -602,16 +601,13 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 18,
     borderRadius: 20,
-    backgroundColor: '#fff',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 1,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
   },
   filterTabActive: {
-    backgroundColor: '#007AFF',
-    shadowColor: '#007AFF',
+    backgroundColor: '#2196F3',
+    shadowColor: '#2196F3',
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 3,
@@ -628,18 +624,20 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   bookingCard: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     marginHorizontal: 20,
     marginTop: 12,
     borderRadius: 20,
     padding: 20,
-    shadowColor: '#000',
+    shadowColor: '#2196F3',
     shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.08,
+    shadowOpacity: 0.15,
     shadowRadius: 12,
     elevation: 3,
+    borderLeftWidth: 4,
+    borderLeftColor: '#2196F3',
     borderWidth: 1,
-    borderColor: 'rgba(0, 0, 0, 0.05)',
+    borderColor: '#E0E0E0',
   },
   bookingHeader: {
     marginBottom: 14,
@@ -705,7 +703,7 @@ const styles = StyleSheet.create({
   },
   hotelName: {
     fontSize: 13,
-    color: '#007AFF',
+    color: '#2196F3',
     marginTop: 6,
   },
   bookingFooter: {
@@ -758,7 +756,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   modalContent: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     paddingTop: 24,
@@ -803,7 +801,7 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   modalCloseButton: {
-    backgroundColor: '#8E8E93',
+    backgroundColor: '#2196F3',
     marginHorizontal: 24,
     marginTop: 8,
     paddingVertical: 14,
@@ -813,6 +811,6 @@ const styles = StyleSheet.create({
   modalCloseButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#fff',
+    color: '#FFFFFF',
   },
 });

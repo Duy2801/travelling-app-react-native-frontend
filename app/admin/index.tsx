@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -51,10 +51,10 @@ const Toast = ({ visible, message, type, onHide }: any) => {
   if (!visible) return null;
 
   const colors = type === 'success' 
-    ? (['#4CAF50', '#45A049'] as const)
+    ? (['#10b981', '#059669'] as const)
     : type === 'error'
-    ? (['#FF3B30', '#E5342A'] as const)
-    : (['#2196F3', '#1976D2'] as const);
+    ? (['#ef4444', '#dc2626'] as const)
+    : (['#3b82f6', '#2563eb'] as const);
 
   return (
     <Animated.View 
@@ -99,15 +99,20 @@ const ConfirmModal = ({ visible, title, message, onConfirm, onCancel }: any) => 
     >
       <View style={styles.modalOverlay}>
         <Animated.View style={[styles.modalContent, { transform: [{ scale: scaleValue }] }]}>
-          <View style={styles.modalHeader}>
-            <Text style={styles.modalIcon}>⚠️</Text>
-            <Text style={styles.modalTitle}>{title}</Text>
+          {/* Icon Container */}
+          <View style={styles.modalIconContainer}>
+            <View style={styles.modalIconCircle}>
+              <Text style={styles.modalIcon}>🚪</Text>
+            </View>
           </View>
           
+          {/* Body */}
           <View style={styles.modalBody}>
+            <Text style={styles.modalTitle}>{title}</Text>
             <Text style={styles.modalMessage}>{message}</Text>
           </View>
 
+          {/* Footer */}
           <View style={styles.modalFooter}>
             <TouchableOpacity style={styles.modalBtnCancel} onPress={onCancel}>
               <Text style={styles.modalBtnCancelText}>Hủy</Text>
@@ -128,7 +133,10 @@ export default function AdminDashboardScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [sidebarVisible, setSidebarVisible] = useState(false);
+  const [activeMenu, setActiveMenu] = useState('dashboard');
   const [toast, setToast] = useState({ visible: false, message: '', type: 'info' });
+  const slideAnim = React.useRef(new Animated.Value(-280)).current;
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalTours: 0,
@@ -144,6 +152,33 @@ export default function AdminDashboardScreen() {
   useEffect(() => {
     checkAdminAccess();
   }, []);
+
+  useEffect(() => {
+    if (sidebarVisible) {
+      Animated.spring(slideAnim, {
+        toValue: 0,
+        useNativeDriver: true,
+        tension: 50,
+        friction: 8,
+      }).start();
+    } else {
+      Animated.timing(slideAnim, {
+        toValue: -280,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [sidebarVisible]);
+
+  const toggleSidebar = () => {
+    setSidebarVisible(!sidebarVisible);
+  };
+
+  const handleMenuPress = (route: string, menuId: string) => {
+    setActiveMenu(menuId);
+    setSidebarVisible(false);
+    setTimeout(() => router.push(route as any), 300);
+  };
 
   const showToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
     setToast({ visible: true, message, type });
@@ -238,7 +273,6 @@ export default function AdminDashboardScreen() {
       route: '/admin/users', 
       color: '#2196F3',
       count: stats.totalUsers,
-      iconBg: '#E3F2FD',
     },
     { 
       id: 'tours', 
@@ -248,7 +282,6 @@ export default function AdminDashboardScreen() {
       route: '/admin/tours', 
       color: '#FF9800',
       count: stats.totalTours,
-      iconBg: '#FFF3E0',
     },
     { 
       id: 'hotels', 
@@ -258,7 +291,6 @@ export default function AdminDashboardScreen() {
       route: '/admin/hotels', 
       color: '#00BCD4',
       count: stats.totalHotels,
-      iconBg: '#E0F7FA',
     },
     { 
       id: 'services', 
@@ -268,7 +300,15 @@ export default function AdminDashboardScreen() {
       route: '/admin/services', 
       color: '#4CAF50',
       count: stats.totalServices,
-      iconBg: '#E8F5E9',
+    },
+    { 
+      id: 'statistics', 
+      title: 'Thống kê', 
+      subtitle: 'Báo cáo & phân tích',
+      icon: '�', 
+      route: '/admin/statistics', 
+      color: '#9C27B0',
+      count: 0,
     },
     { 
       id: 'reviews', 
@@ -278,16 +318,6 @@ export default function AdminDashboardScreen() {
       route: '/admin/reviews', 
       color: '#FFC107',
       count: stats.totalReviews,
-      iconBg: '#FFF8E1',
-    },
-    { 
-      id: 'analytics', 
-      title: 'Thống kê', 
-      subtitle: 'Báo cáo & phân tích',
-      icon: '📊', 
-      route: '/admin/analytics', 
-      color: '#9C27B0',
-      iconBg: '#F3E5F5',
     },
   ];
 
@@ -309,7 +339,7 @@ export default function AdminDashboardScreen() {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#2196F3" />
+        <ActivityIndicator size="large" color="#667eea" />
         <Text style={styles.loadingText}>Đang tải...</Text>
       </View>
     );
@@ -335,94 +365,128 @@ export default function AdminDashboardScreen() {
         onConfirm={handleLogout}
         onCancel={() => setShowLogoutModal(false)}
       />
-      
-      <View style={styles.header}>
-        <View style={styles.headerTop}>
-          <View style={styles.userSection}>
-            <View style={styles.avatarContainer}>
-              <View style={styles.avatar}>
-                <Text style={styles.avatarText}>{user.name.charAt(0).toUpperCase()}</Text>
-              </View>
-              <View style={styles.onlineDot} />
-            </View>
-            <View style={styles.userInfo}>
-              <Text style={styles.greeting}>Xin chào 👋</Text>
-              <Text style={styles.userName}>{user.name}</Text>
-              <View style={styles.adminBadge}>
-                <Text style={styles.adminBadgeText}>👑 Admin</Text>
-              </View>
-            </View>
-          </View>
-          <TouchableOpacity 
-            style={styles.logoutBtn} 
-            onPress={() => setShowLogoutModal(true)}
-            activeOpacity={0.8}
+
+      {/* Sidebar Modal */}
+      <Modal
+        transparent
+        visible={sidebarVisible}
+        animationType="none"
+        onRequestClose={toggleSidebar}
+      >
+        <View style={styles.sidebarOverlay}>
+          <Animated.View 
+            style={[
+              styles.sidebar,
+              { transform: [{ translateX: slideAnim }] }
+            ]}
           >
-            <Text style={styles.logoutIcon}>🚪</Text>
-          </TouchableOpacity>
+            <View style={styles.sidebarHeader}>
+              <Text style={styles.sidebarLogo}>✈️</Text>
+              <Text style={styles.sidebarTitle}>Travel Admin</Text>
+            </View>
+
+            <View style={styles.sidebarUserInfo}>
+              <View style={styles.sidebarAvatar}>
+                <Text style={styles.sidebarAvatarText}>{user?.name?.charAt(0).toUpperCase()}</Text>
+              </View>
+              <View style={styles.sidebarUserDetails}>
+                <Text style={styles.sidebarUserName}>{user?.name}</Text>
+                <Text style={styles.sidebarUserRole}>Super Admin</Text>
+              </View>
+            </View>
+
+            <View style={styles.sidebarMenuLabel}>
+              <Text style={styles.sidebarMenuLabelText}>MENU</Text>
+            </View>
+
+            <ScrollView style={styles.sidebarMenu} showsVerticalScrollIndicator={false}>
+              <TouchableOpacity 
+                style={[styles.sidebarMenuItem, activeMenu === 'dashboard' && styles.sidebarMenuItemActive]}
+                onPress={() => {
+                  setActiveMenu('dashboard');
+                  setSidebarVisible(false);
+                }}
+              >
+                <Text style={styles.sidebarMenuIcon}>📊</Text>
+                <Text style={[styles.sidebarMenuText, activeMenu === 'dashboard' && styles.sidebarMenuTextActive]}>
+                  Dashboard
+                </Text>
+              </TouchableOpacity>
+
+              {menuItems.map((item) => (
+                <TouchableOpacity
+                  key={item.id}
+                  style={[styles.sidebarMenuItem, activeMenu === item.id && styles.sidebarMenuItemActive]}
+                  onPress={() => handleMenuPress(item.route, item.id)}
+                >
+                  <Text style={styles.sidebarMenuIcon}>{item.icon}</Text>
+                  <Text style={[styles.sidebarMenuText, activeMenu === item.id && styles.sidebarMenuTextActive]}>
+                    {item.title}
+                  </Text>
+                  {item.count > 0 && (
+                    <View style={styles.sidebarMenuBadge}>
+                      <Text style={styles.sidebarMenuBadgeText}>{item.count}</Text>
+                    </View>
+                  )}
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+
+            <TouchableOpacity 
+              style={styles.sidebarLogout}
+              onPress={() => {
+                setSidebarVisible(false);
+                setTimeout(() => setShowLogoutModal(true), 300);
+              }}
+            >
+              <View style={styles.logoutIconContainer}>
+                <Text style={styles.sidebarLogoutIcon}>🚪</Text>
+              </View>
+              <Text style={styles.sidebarLogoutText}>Đăng xuất</Text>
+            </TouchableOpacity>
+          </Animated.View>
+          <TouchableOpacity 
+            style={styles.sidebarBackdrop} 
+            activeOpacity={1} 
+            onPress={toggleSidebar}
+          />
+        </View>
+      </Modal>
+
+      {/* Top Header */}
+      <View style={styles.topHeader}>
+        <TouchableOpacity style={styles.menuButton} onPress={toggleSidebar}>
+          <View style={styles.menuButtonLine} />
+          <View style={styles.menuButtonLine} />
+          <View style={styles.menuButtonLine} />
+        </TouchableOpacity>
+        
+        <View style={styles.headerCenter}>
+          <Text style={styles.headerLogo}>✈️</Text>
+          <Text style={styles.headerTitle}>Travel Admin</Text>
         </View>
 
-        <View style={styles.statsContainer}>
-          <View style={styles.statsGrid}>
-            <View style={styles.statCard}>
-              <View style={[styles.statIconBox, { backgroundColor: '#E3F2FD' }]}>
-                <Text style={styles.statIcon}>�</Text>
-              </View>
-              <Text style={styles.statLabel}>Người dùng</Text>
-              <Text style={styles.statValue}>{formatNumber(stats.totalUsers)}</Text>
-            </View>
-
-            <View style={styles.statCard}>
-              <View style={[styles.statIconBox, { backgroundColor: '#FFF3E0' }]}>
-                <Text style={styles.statIcon}>�️</Text>
-              </View>
-              <Text style={styles.statLabel}>Tours</Text>
-              <Text style={styles.statValue}>{formatNumber(stats.totalTours)}</Text>
-            </View>
-
-            <View style={styles.statCard}>
-              <View style={[styles.statIconBox, { backgroundColor: '#E0F7FA' }]}>
-                <Text style={styles.statIcon}>🏨</Text>
-              </View>
-              <Text style={styles.statLabel}>Khách sạn</Text>
-              <Text style={styles.statValue}>{formatNumber(stats.totalHotels)}</Text>
-            </View>
-
-            <View style={styles.statCard}>
-              <View style={[styles.statIconBox, { backgroundColor: '#E8F5E9' }]}>
-                <Text style={styles.statIcon}>🎫</Text>
-              </View>
-              <Text style={styles.statLabel}>Dịch vụ</Text>
-              <Text style={styles.statValue}>{formatNumber(stats.totalServices)}</Text>
-            </View>
-          </View>
-
-          <View style={styles.quickStatsRow}>
-            <View style={styles.quickStat}>
-              <View style={styles.quickStatLeft}>
-                <Text style={styles.quickStatIcon}>�</Text>
-                <View>
-                  <Text style={styles.quickStatValue}>{formatNumber(stats.totalBookings)}</Text>
-                  <Text style={styles.quickStatLabel}>Tổng đặt chỗ</Text>
-                </View>
-              </View>
-            </View>
-            
+        <View style={styles.headerRight}>
+          <TouchableOpacity 
+            style={styles.notificationBtn}
+            onPress={() => router.push('/admin/tours')}
+          >
+            <Text style={styles.notificationIcon}>🔔</Text>
             {stats.pendingBookings > 0 && (
-              <View style={[styles.quickStat, styles.quickStatPending]}>
-                <View style={styles.quickStatLeft}>
-                  <Text style={styles.quickStatIcon}>⏳</Text>
-                  <View>
-                    <Text style={[styles.quickStatValue, { color: '#FF9800' }]}>{formatNumber(stats.pendingBookings)}</Text>
-                    <Text style={styles.quickStatLabel}>Chờ xử lý</Text>
-                  </View>
-                </View>
+              <View style={styles.notificationBadge}>
+                <Text style={styles.notificationBadgeText}>{stats.pendingBookings}</Text>
               </View>
             )}
-          </View>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={styles.headerAvatar}
+            onPress={() => router.push('/admin/users')}
+          >
+            <Text style={styles.headerAvatarText}>{user?.name?.charAt(0).toUpperCase()}</Text>
+          </TouchableOpacity>
         </View>
       </View>
-
+      
       <ScrollView 
         style={styles.content} 
         showsVerticalScrollIndicator={false}
@@ -431,38 +495,116 @@ export default function AdminDashboardScreen() {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#2196F3" />
         }
       >
-        <View style={styles.menuSection}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Quản lý hệ thống</Text>
-            <View style={styles.sectionBadge}>
-              <Text style={styles.sectionBadgeText}>{menuItems.length} mục</Text>
+        <View style={styles.pageHeader}>
+          <Text style={styles.pageTitle}>Dashboard</Text>
+          <Text style={styles.pageSubtitle}>Xin chào, {user?.name}</Text>
+        </View>
+
+        {/* Stats Cards */}
+        <View style={styles.statsGrid}>
+          <View style={[styles.statCard, { borderLeftColor: '#2196F3' }]}>
+            <View style={styles.statCardTop}>
+              <View style={[styles.statCardIcon, { backgroundColor: '#E3F2FD' }]}>
+                <Text style={styles.statCardEmoji}>�</Text>
+              </View>
+              <Text style={styles.statCardValue}>{formatNumber(stats.totalUsers)}</Text>
             </View>
+            <Text style={styles.statCardLabel}>Người dùng</Text>
           </View>
 
-          <View style={styles.menuGrid}>
+          <View style={[styles.statCard, { borderLeftColor: '#FF9800' }]}>
+            <View style={styles.statCardTop}>
+              <View style={[styles.statCardIcon, { backgroundColor: '#FFF3E0' }]}>
+                                <Text style={styles.statCardEmoji}>�</Text>
+              </View>
+              <Text style={styles.statCardValue}>{formatNumber(stats.totalTours)}</Text>
+            </View>
+            <Text style={styles.statCardLabel}>Tour du lịch</Text>
+          </View>
+
+          <View style={[styles.statCard, { borderLeftColor: '#00BCD4' }]}>
+            <View style={styles.statCardTop}>
+              <View style={[styles.statCardIcon, { backgroundColor: '#E0F7FA' }]}>
+                <Text style={styles.statCardEmoji}>🏨</Text>
+              </View>
+              <Text style={styles.statCardValue}>{formatNumber(stats.totalHotels)}</Text>
+            </View>
+            <Text style={styles.statCardLabel}>Khách sạn</Text>
+          </View>
+
+          <View style={[styles.statCard, { borderLeftColor: '#4CAF50' }]}>
+            <View style={styles.statCardTop}>
+              <View style={[styles.statCardIcon, { backgroundColor: '#E8F5E9' }]}>
+                <Text style={styles.statCardEmoji}>🎫</Text>
+              </View>
+              <Text style={styles.statCardValue}>{formatNumber(stats.totalServices)}</Text>
+            </View>
+            <Text style={styles.statCardLabel}>Dịch vụ</Text>
+          </View>
+
+          <View style={[styles.statCard, { borderLeftColor: '#9C27B0' }]}>
+            <View style={styles.statCardTop}>
+              <View style={[styles.statCardIcon, { backgroundColor: '#F3E5F5' }]}>
+                <Text style={styles.statCardEmoji}>📊</Text>
+              </View>
+              <Text style={styles.statCardValue}>{formatNumber(stats.totalBookings)}</Text>
+            </View>
+            <Text style={styles.statCardLabel}>Đặt phòng</Text>
+          </View>
+
+          <View style={[styles.statCard, { borderLeftColor: '#FFC107' }]}>
+            <View style={styles.statCardTop}>
+              <View style={[styles.statCardIcon, { backgroundColor: '#FFF8E1' }]}>
+                <Text style={styles.statCardEmoji}>⭐</Text>
+              </View>
+              <Text style={styles.statCardValue}>{formatNumber(stats.totalReviews)}</Text>
+            </View>
+            <Text style={styles.statCardLabel}>Đánh giá</Text>
+          </View>
+        </View>
+
+        {/* Pending Bookings Alert */}
+        {stats.pendingBookings > 0 && (
+          <TouchableOpacity 
+            style={styles.alertCard}
+            onPress={() => router.push('/admin/bookings')}
+            activeOpacity={0.9}
+          >
+            <View style={styles.alertIconBox}>
+              <Text style={styles.alertEmoji}>⚠️</Text>
+            </View>
+            <View style={styles.alertContent}>
+              <Text style={styles.alertTitle}>Cần xử lý ngay!</Text>
+              <Text style={styles.alertText}>{stats.pendingBookings} đơn đặt phòng đang chờ duyệt</Text>
+            </View>
+            <Text style={styles.alertArrow}>→</Text>
+          </TouchableOpacity>
+        )}
+
+        {/* Quick Actions */}
+        <View style={styles.quickActions}>
+          <Text style={styles.sectionTitle}>Quản lý nhanh</Text>
+          
+          <View style={styles.actionGrid}>
             {menuItems.map((item) => (
               <TouchableOpacity
                 key={item.id}
-                style={[styles.menuItem, { borderLeftColor: item.color }]}
+                style={styles.actionCard}
                 onPress={() => router.push(item.route as any)}
                 activeOpacity={0.8}
               >
-                <View style={styles.menuItemContent}>
-                  <View style={styles.menuItemTop}>
-                    <View style={[styles.menuIconContainer, { backgroundColor: item.iconBg }]}>
-                      <Text style={styles.menuIcon}>{item.icon}</Text>
+                <View style={[styles.actionCardBorder, { backgroundColor: item.color }]} />
+                <View style={styles.actionCardContent}>
+                  <Text style={styles.actionCardIcon}>{item.icon}</Text>
+                  <View style={styles.actionCardInfo}>
+                    <Text style={styles.actionCardTitle}>{item.title}</Text>
+                    <Text style={styles.actionCardSubtitle}>{item.subtitle}</Text>
+                  </View>
+                  {item.count > 0 && (
+                    <View style={[styles.actionCardBadge, { backgroundColor: item.color }]}>
+                      <Text style={styles.actionCardBadgeText}>{formatNumber(item.count)}</Text>
                     </View>
-                    {item.count !== undefined && item.count > 0 && (
-                      <View style={[styles.countBadge2, { backgroundColor: item.color }]}>
-                        <Text style={styles.countBadgeText2}>{formatNumber(item.count)}</Text>
-                      </View>
-                    )}
-                  </View>
-                  <Text style={styles.menuTitle}>{item.title}</Text>
-                  <Text style={styles.menuSubtitle}>{item.subtitle}</Text>
-                  <View style={[styles.menuArrow, { backgroundColor: item.color }]}>
-                    <Text style={styles.menuArrowText}>→</Text>
-                  </View>
+                  )}
                 </View>
               </TouchableOpacity>
             ))}
@@ -474,70 +616,564 @@ export default function AdminDashboardScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F8F9FA' },
-  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#F8F9FA' },
-  loadingText: { marginTop: 16, fontSize: 16, color: '#2196F3', fontWeight: '600' },
-  toastContainer: { position: 'absolute', top: Platform.OS === 'ios' ? 50 : 30, left: 20, right: 20, zIndex: 9999 },
-  toastGradient: { flexDirection: 'row', alignItems: 'center', padding: 16, borderRadius: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 8 },
-  toastIcon: { fontSize: 24, marginRight: 12, color: '#fff' },
-  toastText: { flex: 1, fontSize: 15, fontWeight: '600', color: '#fff' },
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.6)', justifyContent: 'center', alignItems: 'center', padding: 20 },
-  modalContent: { backgroundColor: '#fff', borderRadius: 24, width: '100%', maxWidth: 360, overflow: 'hidden' },
-  modalHeader: { padding: 24, alignItems: 'center', backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  modalIcon: { fontSize: 48, marginBottom: 12 },
-  modalTitle: { fontSize: 24, fontWeight: '800', color: '#1A1A1A' },
-  modalBody: { padding: 24 },
-  modalMessage: { fontSize: 16, color: '#666', textAlign: 'center', lineHeight: 24 },
-  modalFooter: { flexDirection: 'row', padding: 16, gap: 12 },
-  modalBtnCancel: { flex: 1, paddingVertical: 14, borderRadius: 16, backgroundColor: '#F5F5F5', alignItems: 'center' },
-  modalBtnCancelText: { fontSize: 16, fontWeight: '700', color: '#666' },
-  modalBtnConfirm: { flex: 1, paddingVertical: 14, borderRadius: 16, alignItems: 'center', backgroundColor: '#FF3B30' },
-  modalBtnConfirmText: { fontSize: 16, fontWeight: '700', color: '#fff' },
-  header: { paddingTop: Platform.OS === 'ios' ? 60 : 40, paddingBottom: 24, paddingHorizontal: 20, backgroundColor: '#fff', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 4 },
-  headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 },
-  userSection: { flexDirection: 'row', alignItems: 'center', flex: 1 },
-  avatarContainer: { position: 'relative', marginRight: 16 },
-  avatar: { width: 60, height: 60, borderRadius: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: '#E3F2FD', borderWidth: 3, borderColor: '#2196F3' },
-  avatarText: { fontSize: 28, fontWeight: '800', color: '#2196F3' },
-  onlineDot: { position: 'absolute', bottom: 2, right: 2, width: 14, height: 14, borderRadius: 7, backgroundColor: '#4CAF50', borderWidth: 2, borderColor: '#fff' },
-  userInfo: { flex: 1 },
-  greeting: { fontSize: 14, color: '#666', fontWeight: '500', marginBottom: 4 },
-  userName: { fontSize: 24, fontWeight: '800', color: '#1A1A1A', marginBottom: 8 },
-  adminBadge: { alignSelf: 'flex-start', backgroundColor: '#E3F2FD', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1, borderColor: '#2196F3' },
-  adminBadgeText: { fontSize: 12, color: '#2196F3', fontWeight: '700' },
-  logoutBtn: { width: 48, height: 48, borderRadius: 24, backgroundColor: '#F5F5F5', justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#E0E0E0' },
-  logoutIcon: { fontSize: 24 },
-  statsContainer: { gap: 12 },
-  statsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
-  statCard: { width: (width - 56) / 2, backgroundColor: '#fff', borderRadius: 16, padding: 16, borderWidth: 1, borderColor: '#E0E0E0', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2 },
-  statIconBox: { width: 48, height: 48, borderRadius: 14, backgroundColor: '#E8F5E9', justifyContent: 'center', alignItems: 'center', marginBottom: 12 },
-  statIcon: { fontSize: 24 },
-  statLabel: { fontSize: 12, color: '#666', fontWeight: '600', marginBottom: 6 },
-  statValue: { fontSize: 24, fontWeight: '800', color: '#1A1A1A' },
-  quickStatsRow: { flexDirection: 'row', gap: 12 },
-  quickStat: { flex: 1, backgroundColor: '#fff', borderRadius: 16, padding: 16, borderWidth: 1, borderColor: '#E0E0E0', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2 },
-  quickStatPending: { borderColor: '#FF9800', borderWidth: 2 },
-  quickStatLeft: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  quickStatIcon: { fontSize: 28 },
-  quickStatValue: { fontSize: 20, fontWeight: '800', color: '#1A1A1A', marginBottom: 2 },
-  quickStatLabel: { fontSize: 11, color: '#666', fontWeight: '600' },
-  content: { flex: 1 },
-  contentContainer: { paddingTop: 16, paddingBottom: 40 },
-  menuSection: { paddingHorizontal: 20, paddingTop: 4, paddingBottom: 20 },
-  sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
-  sectionTitle: { fontSize: 24, fontWeight: '800', color: '#1A1A1A' },
-  sectionBadge: { backgroundColor: '#E3F2FD', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 12 },
-  sectionBadgeText: { fontSize: 12, color: '#2196F3', fontWeight: '700' },
-  menuGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 16 },
-  menuItem: { width: (width - 56) / 2, borderRadius: 16, overflow: 'hidden', backgroundColor: '#fff', borderWidth: 1, borderColor: '#E0E0E0', borderLeftWidth: 4, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 8, elevation: 3 },
-  menuItemContent: { padding: 20, minHeight: 180 },
-  menuItemTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 },
-  menuIconContainer: { width: 56, height: 56, borderRadius: 16, justifyContent: 'center', alignItems: 'center' },
-  menuIcon: { fontSize: 28 },
-  countBadge2: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 12, minWidth: 44, alignItems: 'center' },
-  countBadgeText2: { fontSize: 14, fontWeight: '800', color: '#fff' },
-  menuTitle: { fontSize: 18, fontWeight: '800', color: '#1A1A1A', marginBottom: 6 },
-  menuSubtitle: { fontSize: 13, color: '#666', fontWeight: '500', marginBottom: 16 },
-  menuArrow: { alignSelf: 'flex-start', width: 36, height: 36, borderRadius: 18, justifyContent: 'center', alignItems: 'center' },
-  menuArrowText: { fontSize: 18, color: '#fff', fontWeight: '600' },
+  container: { 
+    flex: 1, 
+    backgroundColor: '#F0F2F5' 
+  },
+  loadingContainer: { 
+    flex: 1, 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    backgroundColor: '#F0F2F5' 
+  },
+  loadingText: { 
+    marginTop: 16, 
+    fontSize: 16, 
+    color: '#2196F3', 
+    fontWeight: '600' 
+  },
+  
+  // Toast Styles
+  toastContainer: { 
+    position: 'absolute', 
+    top: Platform.OS === 'ios' ? 50 : 30, 
+    left: 20, 
+    right: 20, 
+    zIndex: 9999 
+  },
+  toastGradient: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    padding: 16, 
+    borderRadius: 16, 
+    shadowColor: '#000', 
+    shadowOffset: { width: 0, height: 4 }, 
+    shadowOpacity: 0.3, 
+    shadowRadius: 8, 
+    elevation: 8 
+  },
+  toastIcon: { 
+    fontSize: 24, 
+    marginRight: 12, 
+    color: '#fff' 
+  },
+  toastText: { 
+    flex: 1, 
+    fontSize: 15, 
+    fontWeight: '600', 
+    color: '#fff' 
+  },
+  
+  // Modal Styles
+  modalOverlay: { 
+    flex: 1, 
+    backgroundColor: 'rgba(0, 0, 0, 0.6)', 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    padding: 20 
+  },
+  modalContent: { 
+    backgroundColor: '#fff', 
+    borderRadius: 24, 
+    width: '100%', 
+    maxWidth: 360, 
+    overflow: 'hidden' 
+  },
+  modalIconContainer: {
+    paddingTop: 32,
+    alignItems: 'center',
+  },
+  modalIconCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#FFF5F5',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 3,
+    borderColor: '#FF3B30',
+  },
+  modalIcon: { 
+    fontSize: 40,
+  },
+  modalBody: { 
+    paddingHorizontal: 28,
+    paddingTop: 24,
+    paddingBottom: 24,
+    alignItems: 'center',
+  },
+  modalTitle: { 
+    fontSize: 22, 
+    fontWeight: '800', 
+    color: '#1A1A1A',
+    marginBottom: 8,
+  },
+  modalMessage: { 
+    fontSize: 15, 
+    color: '#666', 
+    textAlign: 'center', 
+    lineHeight: 22,
+  },
+  modalFooter: { 
+    flexDirection: 'row', 
+    padding: 16, 
+    gap: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#F0F0F0',
+  },
+  modalBtnCancel: { 
+    flex: 1, 
+    paddingVertical: 16, 
+    borderRadius: 12, 
+    backgroundColor: '#F5F5F5', 
+    alignItems: 'center',
+  },
+  modalBtnCancelText: { 
+    fontSize: 16, 
+    fontWeight: '700', 
+    color: '#666',
+  },
+  modalBtnConfirm: { 
+    flex: 1, 
+    paddingVertical: 16, 
+    borderRadius: 12, 
+    alignItems: 'center',
+    backgroundColor: '#FF3B30',
+  },
+  modalBtnConfirmText: { 
+    fontSize: 16, 
+    fontWeight: '700', 
+    color: '#FFFFFF',
+  },
+
+  // Sidebar Styles
+  sidebarOverlay: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+  },
+  sidebarBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  sidebar: {
+    width: 280,
+    backgroundColor: '#FFFFFF',
+    height: '100%',
+    shadowColor: '#000',
+    shadowOffset: { width: 2, height: 0 },
+    shadowOpacity: 0.25,
+    shadowRadius: 10,
+    elevation: 10,
+  },
+  sidebarHeader: {
+    backgroundColor: '#2196F3',
+    padding: 20,
+    paddingTop: Platform.OS === 'ios' ? 60 : 40,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  sidebarLogo: {
+    fontSize: 28,
+  },
+  sidebarTitle: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: '#FFFFFF',
+  },
+  sidebarUserInfo: {
+    backgroundColor: '#FFFFFF',
+    margin: 16,
+    padding: 16,
+    borderRadius: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    borderWidth: 1,
+    borderColor: '#2196F3',
+  },
+  sidebarAvatar: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#2196F3',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  sidebarAvatarText: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: '#FFFFFF',
+  },
+  sidebarUserDetails: {
+    flex: 1,
+  },
+  sidebarUserName: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#1A1A1A',
+    marginBottom: 4,
+  },
+  sidebarUserRole: {
+    fontSize: 12,
+    color: '#666',
+    fontWeight: '500',
+  },
+  sidebarMenuLabel: {
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F2F5',
+  },
+  sidebarMenuLabelText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#666',
+    letterSpacing: 1,
+  },
+  sidebarMenu: {
+    flex: 1,
+    paddingVertical: 8,
+  },
+  sidebarMenuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    gap: 12,
+    borderLeftWidth: 3,
+    borderLeftColor: 'transparent',
+  },
+  sidebarMenuItemActive: {
+    backgroundColor: '#E3F2FD',
+    borderLeftColor: '#2196F3',
+  },
+  sidebarMenuIcon: {
+    fontSize: 20,
+  },
+  sidebarMenuText: {
+    flex: 1,
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#1A1A1A',
+  },
+  sidebarMenuTextActive: {
+    color: '#2196F3',
+    fontWeight: '700',
+  },
+  sidebarMenuBadge: {
+    backgroundColor: '#2196F3',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 10,
+    minWidth: 24,
+    alignItems: 'center',
+  },
+  sidebarMenuBadgeText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  sidebarLogout: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 18,
+    gap: 14,
+    borderTopWidth: 1,
+    borderTopColor: '#F0F2F5',
+    backgroundColor: '#FFF5F5',
+    marginTop: 'auto',
+  },
+  logoutIconContainer: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#FFE5E5',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#FF3B30',
+  },
+  sidebarLogoutIcon: {
+    fontSize: 18,
+  },
+  sidebarLogoutText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#FF3B30',
+    letterSpacing: 0.3,
+  },
+
+  // Top Header Styles
+  topHeader: {
+    backgroundColor: '#FFFFFF',
+    paddingTop: Platform.OS === 'ios' ? 50 : 20,
+    paddingBottom: 16,
+    paddingHorizontal: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F2F5',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  menuButton: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    gap: 5,
+  },
+  menuButtonLine: {
+    width: 24,
+    height: 2,
+    backgroundColor: '#1A1A1A',
+    borderRadius: 1,
+  },
+  headerCenter: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  headerLogo: {
+    fontSize: 24,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#2196F3',
+  },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  notificationBtn: {
+    position: 'relative',
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#F0F2F5',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+  },
+  notificationIcon: {
+    fontSize: 22,
+  },
+  notificationBadge: {
+    position: 'absolute',
+    top: 4,
+    right: 4,
+    backgroundColor: '#FF3B30',
+    borderRadius: 10,
+    minWidth: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
+  },
+  notificationBadgeText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  headerAvatar: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#2196F3',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#1976D2',
+  },
+  headerAvatarText: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    letterSpacing: 0.5,
+  },
+
+  // Content Styles
+  content: { 
+    flex: 1 
+  },
+  contentContainer: { 
+    padding: 20,
+    paddingBottom: 40 
+  },
+  pageHeader: {
+    marginBottom: 24,
+  },
+  pageTitle: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: '#1A1A1A',
+    marginBottom: 4,
+  },
+  pageSubtitle: {
+    fontSize: 15,
+    color: '#666',
+    fontWeight: '500',
+  },
+
+  // Stats Grid
+  statsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    marginBottom: 20,
+  },
+  statCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 16,
+    width: (width - 52) / 2,
+    borderLeftWidth: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  statCardTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 12,
+  },
+  statCardIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  statCardEmoji: {
+    fontSize: 22,
+  },
+  statCardValue: {
+    fontSize: 24,
+    fontWeight: '800',
+    color: '#1A1A1A',
+  },
+  statCardLabel: {
+    fontSize: 13,
+    color: '#666',
+    fontWeight: '600',
+  },
+
+  // Alert Card
+  alertCard: {
+    backgroundColor: '#FFF3CD',
+    borderRadius: 12,
+    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#FFE69C',
+  },
+  alertIconBox: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#FFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  alertEmoji: {
+    fontSize: 22,
+  },
+  alertContent: {
+    flex: 1,
+  },
+  alertTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#856404',
+    marginBottom: 4,
+  },
+  alertText: {
+    fontSize: 13,
+    color: '#856404',
+    fontWeight: '500',
+  },
+  alertArrow: {
+    fontSize: 20,
+    color: '#856404',
+    fontWeight: '600',
+  },
+
+  // Quick Actions
+  quickActions: {
+    marginBottom: 20,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#1A1A1A',
+    marginBottom: 16,
+  },
+  actionGrid: {
+    gap: 12,
+  },
+  actionCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  actionCardBorder: {
+    height: 4,
+  },
+  actionCardContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    gap: 12,
+  },
+  actionCardIcon: {
+    fontSize: 28,
+  },
+  actionCardInfo: {
+    flex: 1,
+  },
+  actionCardTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#1A1A1A',
+    marginBottom: 4,
+  },
+  actionCardSubtitle: {
+    fontSize: 13,
+    color: '#666',
+    fontWeight: '500',
+  },
+  actionCardBadge: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+    minWidth: 44,
+    alignItems: 'center',
+  },
+  actionCardBadgeText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
 });

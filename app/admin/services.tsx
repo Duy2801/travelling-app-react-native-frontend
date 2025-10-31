@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -34,12 +34,16 @@ export default function AdminServicesScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState<ServiceType | 'all'>('all');
   
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
+  
+  // Track if initial load is done
+  const isInitialMount = useRef(true);
   
   // Modal states
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -60,9 +64,28 @@ export default function AdminServicesScreen() {
     checkUserRole();
   }, []);
 
+  // Debounce search query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Reset to page 1 when search or filter changes (skip initial mount)
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    setCurrentPage(1);
+  }, [debouncedSearch, typeFilter]);
+
+  // Load services when page, search, or filter changes
   useEffect(() => {
     loadServices();
-  }, [currentPage, typeFilter]);
+  }, [currentPage, debouncedSearch, typeFilter]);
 
   const checkUserRole = async () => {
     try {
@@ -87,8 +110,8 @@ export default function AdminServicesScreen() {
         sortBy: 'createdAt:desc',
       };
 
-      if (searchQuery) {
-        params.name = searchQuery;
+      if (debouncedSearch) {
+        params.name = debouncedSearch;
       }
 
       if (typeFilter !== 'all') {
@@ -112,11 +135,11 @@ export default function AdminServicesScreen() {
     setCurrentPage(1);
     await loadServices();
     setRefreshing(false);
-  }, [typeFilter, searchQuery]);
+  }, [typeFilter, debouncedSearch]);
 
   const handleSearch = () => {
+    setDebouncedSearch(searchQuery);
     setCurrentPage(1);
-    loadServices();
   };
 
   const handleCreateService = async () => {
@@ -304,7 +327,7 @@ export default function AdminServicesScreen() {
   if (isLoading && !refreshing) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#007AFF" />
+        <ActivityIndicator size="large" color="#2196F3" />
         <Text style={styles.loadingText}>Đang tải...</Text>
       </View>
     );
@@ -312,7 +335,7 @@ export default function AdminServicesScreen() {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
 
       {/* Header */}
       <View style={styles.header}>
@@ -343,8 +366,8 @@ export default function AdminServicesScreen() {
           {searchQuery.length > 0 && (
             <TouchableOpacity onPress={() => {
               setSearchQuery('');
+              setDebouncedSearch('');
               setCurrentPage(1);
-              loadServices();
             }}>
               <Text style={styles.clearIcon}>✕</Text>
             </TouchableOpacity>
@@ -400,7 +423,7 @@ export default function AdminServicesScreen() {
       <ScrollView
         style={styles.content}
         showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#2196F3" />}
       >
         {services.length > 0 ? (
           <>
@@ -542,17 +565,15 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   header: {
-    backgroundColor: '#FF2D55',
+    backgroundColor: '#FFFFFF',
     paddingTop: Platform.OS === 'ios' ? 50 : 30,
     paddingBottom: 20,
     paddingHorizontal: 20,
-    borderBottomLeftRadius: 32,
-    borderBottomRightRadius: 32,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.15,
-    shadowRadius: 16,
-    elevation: 8,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 3,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -561,13 +582,13 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    backgroundColor: '#F8F9FA',
     justifyContent: 'center',
     alignItems: 'center',
   },
   backButtonText: {
     fontSize: 24,
-    color: '#fff',
+    color: '#1A1A1A',
     fontWeight: '600',
   },
   headerTitleContainer: {
@@ -576,7 +597,7 @@ const styles = StyleSheet.create({
   },
   headerSubtitle: {
     fontSize: 11,
-    color: 'rgba(255, 255, 255, 0.6)',
+    color: '#999',
     marginBottom: 2,
     textTransform: 'uppercase',
     letterSpacing: 1,
@@ -585,11 +606,11 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 24,
     fontWeight: '800',
-    color: '#fff',
+    color: '#2196F3',
     letterSpacing: -0.5,
   },
   headerBadge: {
-    backgroundColor: '#fff',
+    backgroundColor: '#2196F3',
     borderRadius: 16,
     paddingHorizontal: 12,
     paddingVertical: 6,
@@ -599,7 +620,7 @@ const styles = StyleSheet.create({
   headerBadgeText: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#FF2D55',
+    color: '#FFFFFF',
   },
   searchContainer: {
     backgroundColor: 'transparent',
@@ -609,15 +630,12 @@ const styles = StyleSheet.create({
   searchBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 16,
+    backgroundColor: '#F8F9FA',
+    borderRadius: 12,
     paddingHorizontal: 16,
     marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 3,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
   },
   searchIcon: {
     fontSize: 18,
@@ -627,7 +645,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 15,
     paddingVertical: 14,
-    color: '#1a1a1a',
+    color: '#1A1A1A',
     fontWeight: '500',
   },
   clearIcon: {
@@ -636,20 +654,20 @@ const styles = StyleSheet.create({
     padding: 4,
   },
   addButton: {
-    backgroundColor: '#FF2D55',
+    backgroundColor: '#2196F3',
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: 12,
     alignItems: 'center',
     marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowColor: '#2196F3',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
   },
   addButtonText: {
-    color: '#fff',
+    color: '#FFFFFF',
     fontSize: 15,
     fontWeight: '700',
   },
@@ -664,16 +682,13 @@ const styles = StyleSheet.create({
   filterChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: '#F8F9FA',
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
   },
   filterChipActive: {
-    backgroundColor: '#FF2D55',
-    borderColor: '#FF2D55',
+    backgroundColor: '#2196F3',
   },
   filterChipIcon: {
     fontSize: 16,
@@ -685,22 +700,24 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   filterChipTextActive: {
-    color: '#fff',
+    color: '#FFFFFF',
   },
   content: {
     flex: 1,
   },
   serviceCard: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     marginHorizontal: 16,
     marginTop: 12,
     borderRadius: 16,
     padding: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+    shadowColor: '#2196F3',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
+    borderLeftWidth: 4,
+    borderLeftColor: '#2196F3',
   },
   serviceHeader: {
     flexDirection: 'row',
@@ -710,7 +727,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 16,
-    backgroundColor: '#FFF0F3',
+    backgroundColor: '#E3F2FD',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 14,
@@ -724,12 +741,12 @@ const styles = StyleSheet.create({
   serviceName: {
     fontSize: 17,
     fontWeight: 'bold',
-    color: '#1a1a1a',
+    color: '#1A1A1A',
     marginBottom: 6,
   },
   typeBadge: {
     alignSelf: 'flex-start',
-    backgroundColor: '#FFE6EB',
+    backgroundColor: '#E3F2FD',
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 10,
@@ -737,7 +754,7 @@ const styles = StyleSheet.create({
   },
   typeBadgeText: {
     fontSize: 11,
-    color: '#FF2D55',
+    color: '#2196F3',
     fontWeight: '700',
   },
   serviceDescription: {
@@ -749,7 +766,7 @@ const styles = StyleSheet.create({
   servicePrice: {
     fontSize: 17,
     fontWeight: 'bold',
-    color: '#FF2D55',
+    color: '#2196F3',
   },
   serviceActions: {
     flexDirection: 'row',
@@ -762,7 +779,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   editButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#2196F3',
   },
   deleteButton: {
     backgroundColor: '#FF3B30',
@@ -770,10 +787,10 @@ const styles = StyleSheet.create({
   actionButtonText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#fff',
+    color: '#FFFFFF',
   },
   deleteButtonText: {
-    color: '#fff',
+    color: '#FFFFFF',
   },
   pagination: {
     flexDirection: 'row',
@@ -794,13 +811,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 8,
-    backgroundColor: '#5856D6',
+    backgroundColor: '#2196F3',
   },
   pageButtonDisabled: {
     backgroundColor: '#E0E0E0',
   },
   pageButtonText: {
-    color: '#fff',
+    color: '#FFFFFF',
     fontSize: 14,
     fontWeight: '600',
   },
@@ -844,7 +861,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 16,
     textAlign: 'center',
-    color: '#1a1a1a',
+    color: '#1A1A1A',
   },
   formContainer: {
     maxHeight: 500,
@@ -886,8 +903,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   typeOptionActive: {
-    borderColor: '#FF2D55',
-    backgroundColor: '#FFE6EB',
+    borderColor: '#2196F3',
+    backgroundColor: '#E3F2FD',
   },
   typeIcon: {
     fontSize: 24,
@@ -899,7 +916,7 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   typeTextActive: {
-    color: '#FF2D55',
+    color: '#2196F3',
   },
   row: {
     flexDirection: 'row',
@@ -921,7 +938,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   cancelButton: {
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#F8F9FA',
   },
   cancelButtonText: {
     color: '#666',
@@ -929,10 +946,10 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   submitButton: {
-    backgroundColor: '#FF2D55',
+    backgroundColor: '#2196F3',
   },
   submitButtonText: {
-    color: '#fff',
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
   },

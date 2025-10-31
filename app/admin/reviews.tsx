@@ -47,10 +47,10 @@ const Toast = ({ visible, message, type, onHide }: any) => {
   if (!visible) return null;
 
   const colors = type === 'success' 
-    ? (['#10b981', '#059669'] as const)
+    ? (['#4CAF50', '#4CAF50'] as const)
     : type === 'error'
-    ? (['#ef4444', '#dc2626'] as const)
-    : (['#3b82f6', '#2563eb'] as const);
+    ? (['#FF3B30', '#FF3B30'] as const)
+    : (['#2196F3', '#2196F3'] as const);
 
   return (
     <Animated.View 
@@ -95,29 +95,23 @@ const ConfirmModal = ({ visible, title, message, onConfirm, onCancel }: any) => 
     >
       <View style={styles.modalOverlay}>
         <Animated.View style={[styles.modalContent, { transform: [{ scale: scaleValue }] }]}>
-          <LinearGradient
-            colors={['#f093fb', '#f5576c']}
-            style={styles.modalHeader}
-          >
-            <Text style={styles.modalIcon}>⚠️</Text>
-            <Text style={styles.modalTitle}>{title}</Text>
-          </LinearGradient>
+          <View style={styles.modalIconContainer}>
+            <View style={styles.modalIconCircle}>
+              <Text style={styles.modalIcon}>⚠️</Text>
+            </View>
+          </View>
           
           <View style={styles.modalBody}>
+            <Text style={styles.modalTitle}>{title}</Text>
             <Text style={styles.modalMessage}>{message}</Text>
           </View>
 
           <View style={styles.modalFooter}>
             <TouchableOpacity style={styles.modalBtnCancel} onPress={onCancel}>
-              <Text style={styles.modalBtnCancelText}>Hủy</Text>
+              <Text style={styles.modalBtnCancelText}>✕ Hủy bỏ</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={onConfirm}>
-              <LinearGradient
-                colors={['#ef4444', '#dc2626']}
-                style={styles.modalBtnConfirm}
-              >
-                <Text style={styles.modalBtnConfirmText}>Xóa</Text>
-              </LinearGradient>
+            <TouchableOpacity style={styles.modalBtnConfirm} onPress={onConfirm}>
+              <Text style={styles.modalBtnConfirmText}>🗑️ Xác nhận xóa</Text>
             </TouchableOpacity>
           </View>
         </Animated.View>
@@ -260,7 +254,7 @@ export default function AdminReviewsScreen() {
   if (isLoading && !refreshing) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#667eea" />
+        <ActivityIndicator size="large" color="#2196F3" />
         <Text style={styles.loadingText}>Đang tải...</Text>
       </View>
     );
@@ -268,7 +262,7 @@ export default function AdminReviewsScreen() {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
       
       <Toast 
         visible={toast.visible}
@@ -288,16 +282,11 @@ export default function AdminReviewsScreen() {
         }}
       />
       
-      {/* Header với Gradient */}
-      <LinearGradient
-        colors={['#fa709a', '#fee140']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.header}
-      >
+      {/* Header */}
+      <View style={styles.header}>
         <View style={styles.headerTop}>
           <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-            <Text style={styles.backIcon}></Text>
+            <Text style={styles.backIcon}>←</Text>
           </TouchableOpacity>
           <View style={styles.headerTitleBox}>
             <Text style={styles.headerSubtitle}>Quản lý</Text>
@@ -326,7 +315,7 @@ export default function AdminReviewsScreen() {
                 onPress={() => { setTargetTypeFilter('tour'); setCurrentPage(1); }}
               >
                 <Text style={[styles.chipText, targetTypeFilter === 'tour' && styles.chipTextActive]}>
-                   Tour
+                  🗺️ Tour
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -334,7 +323,7 @@ export default function AdminReviewsScreen() {
                 onPress={() => { setTargetTypeFilter('hotel'); setCurrentPage(1); }}
               >
                 <Text style={[styles.chipText, targetTypeFilter === 'hotel' && styles.chipTextActive]}>
-                   Hotel
+                  🏨 Hotel
                 </Text>
               </TouchableOpacity>
             </View>
@@ -359,7 +348,7 @@ export default function AdminReviewsScreen() {
                     onPress={() => { setRatingFilter(rating); setCurrentPage(1); }}
                   >
                     <Text style={[styles.chipText, ratingFilter === rating && styles.chipTextActive]}>
-                      {rating} 
+                      {rating} ⭐
                     </Text>
                   </TouchableOpacity>
                 ))}
@@ -367,35 +356,26 @@ export default function AdminReviewsScreen() {
             </ScrollView>
           </View>
         </View>
-      </LinearGradient>
+      </View>
 
       <ScrollView
         style={styles.content}
         showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#fa709a" />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#2196F3" />}
       >
         {reviews.length > 0 ? (
           <>
             {reviews.map((review) => (
               <View key={review.id} style={styles.reviewCard}>
-                <LinearGradient
-                  colors={getTypeColor(review.targetType)}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                  style={styles.cardAccent}
-                />
                 
                 <View style={styles.cardHeader}>
                   <View style={styles.userSection}>
                     <View style={styles.avatarGradient}>
-                      <LinearGradient
-                        colors={['#ffd89b', '#19547b']}
-                        style={styles.avatar}
-                      >
+                      <View style={styles.avatar}>
                         <Text style={styles.avatarText}>
                           {getUserName(review.userId).charAt(0).toUpperCase()}
                         </Text>
-                      </LinearGradient>
+                      </View>
                     </View>
                     <View style={styles.userDetails}>
                       <Text style={styles.userName}>{getUserName(review.userId)}</Text>
@@ -407,12 +387,9 @@ export default function AdminReviewsScreen() {
                     style={styles.deleteBtn}
                     onPress={() => handleDeleteReview(review)}
                   >
-                    <LinearGradient
-                      colors={['#f093fb', '#f5576c']}
-                      style={styles.deleteBtnGradient}
-                    >
-                      <Text style={styles.deleteIcon}></Text>
-                    </LinearGradient>
+                    <View style={styles.deleteBtnGradient}>
+                      <Text style={styles.deleteIcon}>🗑️</Text>
+                    </View>
                   </TouchableOpacity>
                 </View>
 
@@ -426,15 +403,12 @@ export default function AdminReviewsScreen() {
                   </View>
                   <Text style={styles.ratingText}>{review.rating}.0</Text>
                   <View style={styles.typeBadge}>
-                    <LinearGradient
-                      colors={getTypeColor(review.targetType)}
-                      style={styles.typeBadgeGradient}
-                    >
+                    <View style={styles.typeBadgeGradient}>
                       <Text style={styles.typeBadgeIcon}>{getTypeIcon(review.targetType)}</Text>
                       <Text style={styles.typeBadgeText}>
                         {review.targetType === 'tour' ? 'Tour' : 'Hotel'}
                       </Text>
-                    </LinearGradient>
+                    </View>
                   </View>
                 </View>
 
@@ -511,15 +485,23 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 16,
     fontSize: 16,
-    color: '#667eea',
+    color: '#2196F3',
     fontWeight: '600',
   },
 
   // Header
   header: {
+    backgroundColor: '#FFFFFF',
     paddingTop: Platform.OS === 'ios' ? 60 : 40,
     paddingBottom: 24,
     paddingHorizontal: 20,
+    borderBottomLeftRadius: 32,
+    borderBottomRightRadius: 32,
+    shadowColor: '#2196F3',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 8,
   },
   headerTop: {
     flexDirection: 'row',
@@ -530,15 +512,15 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+    backgroundColor: '#F8F9FA',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
+    borderColor: '#E0E0E0',
   },
   backIcon: {
     fontSize: 24,
-    color: '#fff',
+    color: '#2196F3',
     fontWeight: '600',
   },
   headerTitleBox: {
@@ -547,7 +529,7 @@ const styles = StyleSheet.create({
   },
   headerSubtitle: {
     fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.85)',
+    color: '#999',
     fontWeight: '600',
     textTransform: 'uppercase',
     letterSpacing: 1,
@@ -555,11 +537,11 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 28,
     fontWeight: '800',
-    color: '#fff',
+    color: '#2196F3',
     marginTop: 2,
   },
   countBadge: {
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    backgroundColor: '#2196F3',
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 16,
@@ -569,7 +551,7 @@ const styles = StyleSheet.create({
   countBadgeText: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#fa709a',
+    color: '#FFFFFF',
   },
 
   // Filters
@@ -581,7 +563,7 @@ const styles = StyleSheet.create({
   },
   filterLabel: {
     fontSize: 13,
-    color: 'rgba(255, 255, 255, 0.9)',
+    color: '#666',
     fontWeight: '700',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
@@ -591,52 +573,57 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   chip: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: '#FFFFFF',
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
+    borderColor: '#E0E0E0',
   },
   chipActive: {
-    backgroundColor: '#fff',
+    backgroundColor: '#2196F3',
+    borderColor: '#2196F3',
   },
   chipText: {
     fontSize: 14,
-    color: '#fff',
+    color: '#666',
     fontWeight: '600',
   },
   chipTextActive: {
-    color: '#fa709a',
+    color: '#FFFFFF',
   },
 
   // Content
   content: {
     flex: 1,
-    marginTop: -20,
+    backgroundColor: '#F0F2F5',
   },
 
   // Review Card
   reviewCard: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     marginHorizontal: 20,
     marginTop: 20,
     borderRadius: 24,
     padding: 20,
-    shadowColor: '#000',
+    shadowColor: '#2196F3',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.15,
     shadowRadius: 12,
     elevation: 5,
     position: 'relative',
     overflow: 'hidden',
+    borderLeftWidth: 4,
+    borderLeftColor: '#2196F3',
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
   },
   cardAccent: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
-    height: 4,
+    height: 0,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -659,12 +646,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: '#fff',
+    borderColor: '#2196F3',
+    backgroundColor: '#2196F3',
   },
   avatarText: {
     fontSize: 22,
     fontWeight: '800',
-    color: '#fff',
+    color: '#FFFFFF',
   },
   userDetails: {
     flex: 1,
@@ -683,15 +671,18 @@ const styles = StyleSheet.create({
   deleteBtn: {
     borderRadius: 16,
     overflow: 'hidden',
+    backgroundColor: '#FF3B30',
   },
   deleteBtnGradient: {
     width: 44,
     height: 44,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#FF3B30',
   },
   deleteIcon: {
     fontSize: 20,
+    color: '#FFFFFF',
   },
 
   // Rating
@@ -717,6 +708,7 @@ const styles = StyleSheet.create({
     marginLeft: 'auto',
     borderRadius: 12,
     overflow: 'hidden',
+    backgroundColor: '#2196F3',
   },
   typeBadgeGradient: {
     flexDirection: 'row',
@@ -724,13 +716,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     gap: 6,
+    backgroundColor: '#2196F3',
   },
   typeBadgeIcon: {
     fontSize: 16,
   },
   typeBadgeText: {
     fontSize: 13,
-    color: '#fff',
+    color: '#FFFFFF',
     fontWeight: '700',
   },
 
@@ -780,31 +773,28 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginHorizontal: 20,
     marginTop: 24,
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     padding: 16,
     borderRadius: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
   },
   pageBtn: {
-    backgroundColor: '#ede9fe',
+    backgroundColor: '#E3F2FD',
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 14,
   },
   pageBtnDisabled: {
-    backgroundColor: '#f1f5f9',
+    backgroundColor: '#F8F9FA',
   },
   pageBtnText: {
     fontSize: 14,
-    color: '#7c3aed',
+    color: '#2196F3',
     fontWeight: '700',
   },
   pageBtnTextDisabled: {
-    color: '#94a3b8',
+    color: '#999',
   },
   pageInfo: {
     flexDirection: 'row',
@@ -865,78 +855,108 @@ const styles = StyleSheet.create({
   toastIcon: {
     fontSize: 24,
     marginRight: 12,
-    color: '#fff',
+    color: '#FFFFFF',
   },
   toastText: {
     flex: 1,
     fontSize: 15,
     fontWeight: '600',
-    color: '#fff',
+    color: '#FFFFFF',
   },
 
   // Modal
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
   },
   modalContent: {
-    backgroundColor: '#fff',
-    borderRadius: 24,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 28,
     width: '100%',
-    maxWidth: 360,
+    maxWidth: 380,
     overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 15,
   },
-  modalHeader: {
-    padding: 24,
+  modalIconContainer: {
     alignItems: 'center',
+    paddingTop: 32,
+    paddingBottom: 16,
+  },
+  modalIconCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#FFF3E0',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 3,
+    borderColor: '#FF9500',
   },
   modalIcon: {
-    fontSize: 48,
-    marginBottom: 12,
-  },
-  modalTitle: {
-    fontSize: 24,
-    fontWeight: '800',
-    color: '#fff',
+    fontSize: 42,
   },
   modalBody: {
-    padding: 24,
+    paddingHorizontal: 28,
+    paddingBottom: 24,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#1A1A1A',
+    marginBottom: 12,
+    textAlign: 'center',
   },
   modalMessage: {
-    fontSize: 16,
-    color: '#64748b',
+    fontSize: 15,
+    color: '#666',
     textAlign: 'center',
-    lineHeight: 24,
+    lineHeight: 22,
+    fontWeight: '500',
   },
   modalFooter: {
     flexDirection: 'row',
-    padding: 16,
+    padding: 20,
     gap: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#F0F0F0',
   },
   modalBtnCancel: {
     flex: 1,
-    paddingVertical: 14,
+    paddingVertical: 16,
     borderRadius: 16,
-    backgroundColor: '#f1f5f9',
+    backgroundColor: '#F8F9FA',
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
   },
   modalBtnCancelText: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '700',
-    color: '#64748b',
+    color: '#666',
   },
   modalBtnConfirm: {
     flex: 1,
-    paddingVertical: 14,
+    paddingVertical: 16,
     borderRadius: 16,
     alignItems: 'center',
+    backgroundColor: '#FF3B30',
+    shadowColor: '#FF3B30',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   modalBtnConfirmText: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '700',
-    color: '#fff',
+    color: '#FFFFFF',
   },
 });

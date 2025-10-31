@@ -237,15 +237,15 @@ export default function AdminToursScreen() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'pending':
-        return '#F59E0B';
-      case 'approved':
-        return '#10B981';
-      case 'rejected':
-        return '#EF4444';
+        return '#FF9500';
+      case 'confirmed':
+        return '#4CAF50';
       case 'cancelled':
-        return '#6B7280';
+        return '#FF3B30';
+      case 'completed':
+        return '#2196F3';
       default:
-        return '#64748B';
+        return '#999';
     }
   };
 
@@ -294,7 +294,7 @@ export default function AdminToursScreen() {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#6366F1" />
+        <ActivityIndicator size="large" color="#2196F3" />
         <Text style={styles.loadingText}>Đang tải...</Text>
       </View>
     );
@@ -302,7 +302,7 @@ export default function AdminToursScreen() {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
 
       {/* Header */}
       <View style={styles.header}>
@@ -433,7 +433,7 @@ export default function AdminToursScreen() {
         style={styles.content}
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#6366F1" />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#2196F3" />
         }
       >
         {bookings.length === 0 ? (
@@ -531,10 +531,10 @@ export default function AdminToursScreen() {
                     {
                       backgroundColor:
                         booking.paymentStatus === 'paid'
-                          ? '#D1FAE5'
+                          ? '#4CAF50'
                           : booking.paymentStatus === 'refunded'
-                          ? '#FEE2E2'
-                          : '#FEF3C7',
+                          ? '#999'
+                          : '#FF9500',
                     },
                   ]}
                 >
@@ -542,12 +542,7 @@ export default function AdminToursScreen() {
                     style={[
                       styles.paymentText,
                       {
-                        color:
-                          booking.paymentStatus === 'paid'
-                            ? '#059669'
-                            : booking.paymentStatus === 'refunded'
-                            ? '#DC2626'
-                            : '#D97706',
+                        color: '#FFFFFF',
                       },
                     ]}
                   >
@@ -809,49 +804,47 @@ export default function AdminToursScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: '#F0F2F5',
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F8FAFC',
+    backgroundColor: '#F0F2F5',
   },
   loadingText: {
     marginTop: 12,
     fontSize: 16,
-    color: '#64748B',
-    fontWeight: '500',
+    color: '#666',
+    fontWeight: '600',
   },
 
   // Header
   header: {
-    backgroundColor: '#1a1a1a',
+    backgroundColor: '#FFFFFF',
     paddingTop: Platform.OS === 'ios' ? 50 : 30,
     paddingBottom: 20,
     paddingHorizontal: 20,
-    borderBottomLeftRadius: 32,
-    borderBottomRightRadius: 32,
     flexDirection: 'row',
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 5,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 3,
   },
   backButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: '#F8F9FA',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
   },
   backIcon: {
     fontSize: 24,
-    color: '#FFFFFF',
+    color: '#1A1A1A',
     fontWeight: '600',
   },
   headerTitleContainer: {
@@ -859,18 +852,18 @@ const styles = StyleSheet.create({
   },
   headerSubtitle: {
     fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: '#999',
     fontWeight: '600',
     marginBottom: 2,
   },
   headerTitle: {
     fontSize: 24,
     fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#2196F3',
     letterSpacing: -0.5,
   },
   headerBadge: {
-    backgroundColor: '#F59E0B',
+    backgroundColor: '#2196F3',
     borderRadius: 16,
     paddingHorizontal: 12,
     paddingVertical: 6,
@@ -892,25 +885,20 @@ const styles = StyleSheet.create({
   },
   statCard: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
+    backgroundColor: '#F8F9FA',
+    borderRadius: 12,
     padding: 12,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
   },
   statValue: {
     fontSize: 24,
     fontWeight: '800',
-    color: '#1E293B',
+    color: '#2196F3',
     marginBottom: 4,
   },
   statLabel: {
     fontSize: 11,
-    color: '#64748B',
+    color: '#666',
     fontWeight: '600',
   },
 
@@ -918,17 +906,14 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#F8F9FA',
     marginHorizontal: 20,
     marginBottom: 12,
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderRadius: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
   },
   searchIcon: {
     fontSize: 18,
@@ -937,12 +922,12 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: 15,
-    color: '#1E293B',
+    color: '#1A1A1A',
     fontWeight: '500',
   },
   clearIcon: {
     fontSize: 18,
-    color: '#94A3B8',
+    color: '#999',
     fontWeight: '600',
     paddingLeft: 10,
   },
@@ -953,27 +938,19 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   filterTab: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#F8F9FA',
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 20,
     marginRight: 8,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
   },
   filterTabActive: {
-    backgroundColor: '#6366F1',
-    borderColor: '#6366F1',
-    shadowColor: '#6366F1',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
+    backgroundColor: '#2196F3',
   },
   filterTabText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#64748B',
+    color: '#666',
   },
   filterTabTextActive: {
     color: '#FFFFFF',
@@ -988,14 +965,16 @@ const styles = StyleSheet.create({
   // Booking Card
   bookingCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 20,
+    borderRadius: 16,
     padding: 20,
     marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
+    shadowColor: '#2196F3',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
     shadowRadius: 12,
-    elevation: 3,
+    elevation: 4,
+    borderLeftWidth: 4,
+    borderLeftColor: '#2196F3',
   },
   bookingHeader: {
     marginBottom: 16,
@@ -1009,7 +988,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 18,
     fontWeight: '700',
-    color: '#1E293B',
+    color: '#1A1A1A',
     marginRight: 12,
   },
   statusBadge: {
@@ -1046,19 +1025,19 @@ const styles = StyleSheet.create({
   },
   infoLabel: {
     fontSize: 12,
-    color: '#64748B',
+    color: '#999',
     fontWeight: '500',
     marginBottom: 2,
   },
   infoValue: {
     fontSize: 15,
-    color: '#1E293B',
+    color: '#1A1A1A',
     fontWeight: '600',
   },
 
   divider: {
     height: 1,
-    backgroundColor: '#E2E8F0',
+    backgroundColor: '#F0F2F5',
     marginVertical: 16,
   },
 
@@ -1071,14 +1050,14 @@ const styles = StyleSheet.create({
   },
   priceLabel: {
     fontSize: 13,
-    color: '#64748B',
+    color: '#999',
     fontWeight: '500',
     marginBottom: 4,
   },
   priceValue: {
     fontSize: 20,
     fontWeight: '800',
-    color: '#10B981',
+    color: '#2196F3',
   },
   paymentBadge: {
     paddingHorizontal: 12,
@@ -1097,7 +1076,7 @@ const styles = StyleSheet.create({
   },
   detailButton: {
     flex: 1,
-    backgroundColor: '#F1F5F9',
+    backgroundColor: '#F8F9FA',
     paddingVertical: 12,
     borderRadius: 12,
     alignItems: 'center',
@@ -1105,11 +1084,11 @@ const styles = StyleSheet.create({
   detailButtonText: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#475569',
+    color: '#666',
   },
   approveButton: {
     flex: 1,
-    backgroundColor: '#10B981',
+    backgroundColor: '#4CAF50',
     paddingVertical: 12,
     borderRadius: 12,
     alignItems: 'center',
@@ -1121,7 +1100,7 @@ const styles = StyleSheet.create({
   },
   rejectButton: {
     flex: 1,
-    backgroundColor: '#EF4444',
+    backgroundColor: '#FF3B30',
     paddingVertical: 12,
     borderRadius: 12,
     alignItems: 'center',
@@ -1140,10 +1119,11 @@ const styles = StyleSheet.create({
   emptyIcon: {
     fontSize: 64,
     marginBottom: 16,
+    opacity: 0.3,
   },
   emptyText: {
     fontSize: 16,
-    color: '#64748B',
+    color: '#999',
     fontWeight: '500',
   },
 
@@ -1175,31 +1155,31 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: '#D1FAE5',
+    backgroundColor: '#E8F5E9',
     justifyContent: 'center',
     alignItems: 'center',
   },
   rejectIconCircle: {
-    backgroundColor: '#FEE2E2',
+    backgroundColor: '#FFEBEE',
   },
   confirmIcon: {
     fontSize: 40,
-    color: '#10B981',
+    color: '#4CAF50',
   },
   rejectIcon: {
     fontSize: 40,
-    color: '#EF4444',
+    color: '#FF3B30',
   },
   confirmModalTitle: {
     fontSize: 22,
     fontWeight: '800',
-    color: '#1E293B',
+    color: '#1A1A1A',
     marginBottom: 12,
     textAlign: 'center',
   },
   confirmModalMessage: {
     fontSize: 15,
-    color: '#64748B',
+    color: '#666',
     textAlign: 'center',
     lineHeight: 22,
     marginBottom: 28,
@@ -1218,16 +1198,16 @@ const styles = StyleSheet.create({
     minHeight: 48,
   },
   cancelButton2: {
-    backgroundColor: '#F1F5F9',
+    backgroundColor: '#F8F9FA',
   },
   cancelButtonText2: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#475569',
+    color: '#666',
   },
   approveButton2: {
-    backgroundColor: '#10B981',
-    shadowColor: '#10B981',
+    backgroundColor: '#4CAF50',
+    shadowColor: '#4CAF50',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -1239,8 +1219,8 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   rejectButton2: {
-    backgroundColor: '#EF4444',
-    shadowColor: '#EF4444',
+    backgroundColor: '#FF3B30',
+    shadowColor: '#FF3B30',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -1276,16 +1256,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingVertical: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
+    borderBottomColor: '#F0F2F5',
   },
   modalTitle: {
     fontSize: 20,
     fontWeight: '800',
-    color: '#1E293B',
+    color: '#1A1A1A',
   },
   modalCloseIcon: {
     fontSize: 24,
-    color: '#64748B',
+    color: '#666',
     fontWeight: '600',
   },
   modalBody: {
@@ -1298,7 +1278,7 @@ const styles = StyleSheet.create({
   modalSectionTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#1E293B',
+    color: '#1A1A1A',
     marginBottom: 12,
   },
   modalDetailRow: {
@@ -1307,16 +1287,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
+    borderBottomColor: '#F8F9FA',
   },
   modalDetailLabel: {
     fontSize: 14,
-    color: '#64748B',
+    color: '#999',
     fontWeight: '500',
   },
   modalDetailValue: {
     fontSize: 14,
-    color: '#1E293B',
+    color: '#1A1A1A',
     fontWeight: '600',
     textAlign: 'right',
     flex: 1,
@@ -1324,14 +1304,14 @@ const styles = StyleSheet.create({
   },
   modalPriceValue: {
     fontSize: 16,
-    color: '#10B981',
+    color: '#2196F3',
     fontWeight: '800',
   },
   modalSpecialRequests: {
     fontSize: 14,
-    color: '#475569',
+    color: '#666',
     lineHeight: 20,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: '#F8F9FA',
     padding: 12,
     borderRadius: 12,
   },
